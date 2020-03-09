@@ -30,6 +30,9 @@ public:
     
     //Step 2 member function
     void interiorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY); //interior voricity at time t
+    
+    //Step 2 member function
+    void newInteriorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY, double Re, double dt); //interior vorticity at time t+dt
 
 private:
     double* v = nullptr;

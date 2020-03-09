@@ -72,3 +72,19 @@ void interiorV(double* v, double* s, int Nx, int Ny, double deltaX, double delta
         }
     }
 }
+
+//Setp 3 MEMBER FUNCTION
+void newInteriorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY, double Re, double dt){
+    for(int j=1; j<Ny-1; j++){
+        for(int i=1; i<Nx-1; i++){
+            *(v + j*Nx + i) = *(v + j*Nx + i) + dt*(
+                               (1/Re) * (((*(v + j*Nx + i + 1) - *(v + j*Nx + i)*2 + *(v + j*Nx + i - 1)) / (deltaX*deltaX))
+                                        -((*(v + Nx*(j+1) + i) - *(v + j*Nx + i)*2 + *(v + Nx*(j-1) + i)) / (deltaY*deltaY)))
+                              -(((*(s + Nx*(j+1) + i) - *(s + Nx*(j-1) + i)) / (2*deltaY))
+                               *((*(v + j*Nx + i + 1) - *(v + j*Nx + i - 1)) / (2 *deltaX)))
+                              +(((*(s + j*Nx + i + 1) - *(s + j*Nx + i - 1)) / (2*deltaX))
+                               *((*(v + Nx*(j+1) + i) - *(v + Nx*(j-1) + i)) / (2*deltaY)))
+                                );
+        }
+    }
+}
