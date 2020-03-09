@@ -62,3 +62,13 @@ void verticalBC(double* v, double* s, int Nx, int Ny, double deltaX){
         *(v + Nx*(j+1) - 1) = (*(s + Nx*(j+1) - 1) - *(s + Nx*(j+1) - 2))*(2/(deltaX*deltaX));  //right boundary condition
     }
 }
+
+//STEP 2 MEMBER FUNCTION
+void interiorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY){
+    for(int j=1; j<Ny-1; j++){
+        for(int i=1; i<Nx-1; i++){
+            *(v + j*Nx + i) = -(*(s + j*Nx + i + 1) - *(s + j*Nx + i)*2 + *(s + j*Nx + i - 1))*(2/(deltaX*deltaX))
+                              -(*(s + Nx*(j+1) + i) - *(s + j*Nx + i)*2 + *(s + Nx*(j-1) + i))*(2/(deltaY*deltaY));
+        }
+    }
+}

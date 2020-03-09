@@ -25,8 +25,11 @@ public:
     void SetMatrices(int Nx, int Ny, double* v, double* s);
     
     //Step 1 member functions
-    void topBC(double* v, double* s, int Nx, int Ny, double deltaY);        //boundary conditions along the top and bottom
-    void verticalBC(double* v, double* s, int Nx, int Ny, double deltaX);   //bounday conditions along the left and right
+    void topBC(double* v, double* s, int Nx, int Ny, double deltaY);        //vorticity boundary conditions along the top and bottom at time t
+    void verticalBC(double* v, double* s, int Nx, int Ny, double deltaX);   //vorticity bounday conditions along the left and right at time t
+    
+    //Step 2 member function
+    void interiorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY); //interior voricity at time t
 
 private:
     double* v = nullptr;
