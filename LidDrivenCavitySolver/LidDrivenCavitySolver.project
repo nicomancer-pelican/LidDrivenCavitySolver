@@ -93,6 +93,8 @@
     </Configuration>
   </Settings>
   <VirtualDirectory Name="src">
+    <File Name="PoissonSolver.h"/>
+    <File Name="PoissonSolver.cpp"/>
     <File Name="LidDrivenCavity.h"/>
     <File Name="LidDrivenCavity.cpp"/>
     <File Name="main.cpp"/>
