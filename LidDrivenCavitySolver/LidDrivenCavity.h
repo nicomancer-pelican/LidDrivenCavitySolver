@@ -18,21 +18,21 @@ public:
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
 
-    void Initialise(double xlen, double ylen, int nx, int ny, double deltat, double finalt, double re);
+    void Initialise();
     void Integrate();
 
     // Add any other public functions
-    void SetMatrices(int Nx, int Ny, double* v, double* s);
+
     
     //Step 1 member functions
-    void topBC(double* v, double* s, int Nx, int Ny, double deltaY);        //vorticity boundary conditions along the top and bottom at time t
-    void verticalBC(double* v, double* s, int Nx, int Ny, double deltaX);   //vorticity bounday conditions along the left and right at time t
+    void horizontalBC();        //vorticity boundary conditions along the top and bottom at time t
+    void verticalBC();   //vorticity bounday conditions along the left and right at time t
     
     //Step 2 member function
-    void interiorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY); //interior voricity at time t
+    void interiorV(); //interior voricity at time t
     
     //Step 3 member function
-    void newInteriorV(double* v, double* s, int Nx, int Ny, double deltaX, double deltaY, double Re, double dt); //interior vorticity at time t+dt
+    void newInteriorV(); //interior vorticity at time t+dt
 
 private:
     double* v = nullptr;
@@ -45,6 +45,8 @@ private:
     double Lx;
     double Ly;
     double Re;
+    double deltaX;
+    double deltaY;
 };
 
 

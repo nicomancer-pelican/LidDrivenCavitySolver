@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 
     // Configure the solver here...
     // ...
-    solver->Initialise(xlen, ylen, nx, ny, deltat, finalt, Re);
+    solver->Initialise();
 
     // Run the solver
     solver->Integrate();
