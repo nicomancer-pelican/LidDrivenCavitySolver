@@ -1,26 +1,28 @@
 #ifndef POISSON_SOLVER_H
 #define POISSON_SOLVER_H
 
+#include "LidDrivenCavity.h"
 using namespace std;
 
 class PoissonSolver
 {
 public:
-    friend class LidDrivenCavity;   //to access things in LidDrivenCavity
+    friend class LidDrivenCavity;
     
     //CONSTRUCTORS
     PoissonSolver();
     ~PoissonSolver();
     
     //MEMBER FUNCTIONS
-    void SetA(int Nx, int Ny, double* a);
+    void SetA(LidDrivenCavity LDC, double* a);
     void SetY(int Nx, int Ny, double* y, double* v);
-    void SetX(int Nx, int Ny, double* x);
+    
+    //step 4 member function
+    void newInteriorS(int Nx, int Ny);    //interior stream function at time t+dt
 
 private:
     double* a = nullptr;
     double* y = nullptr;
-    double* x = nullptr;
 };
 
 #endif //POISSON_SOLVER_H

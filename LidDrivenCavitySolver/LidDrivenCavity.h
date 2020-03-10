@@ -2,11 +2,14 @@
 #define LIDDRIVENCAVITY_SOLVER_H
 
 #include <string>
+#include "PoissonSolver.h"
 using namespace std;
 
 class LidDrivenCavity
 {
 public:
+    friend class PoissonSolver;
+    
     //CONSTRUCTORS
     LidDrivenCavity();
     ~LidDrivenCavity();
@@ -25,11 +28,11 @@ public:
 
     
     //Step 1 member functions
-    void horizontalBC();        //vorticity boundary conditions along the top and bottom at time t
+    void horizontalBC(); //vorticity boundary conditions along the top and bottom at time t
     void verticalBC();   //vorticity bounday conditions along the left and right at time t
     
     //Step 2 member function
-    void interiorV(); //interior voricity at time t
+    void interiorV();    //interior voricity at time t
     
     //Step 3 member function
     void newInteriorV(); //interior vorticity at time t+dt

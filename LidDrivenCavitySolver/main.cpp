@@ -18,7 +18,12 @@ int main(int argc, char **argv)
     LidDrivenCavity* solver = new LidDrivenCavity();
 
     // Configure the solver here...
-    // ...
+    solver->SetDomainSize(xlen, ylen);
+    solver->SetGridSize(nx, ny);
+    solver->SetTimeStep(deltat);
+    solver->SetFinalTime(finalt);
+    solver->SetReynoldsNumber(Re);
+    
     solver->Initialise();
 
     // Run the solver
