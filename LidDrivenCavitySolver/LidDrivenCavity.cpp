@@ -13,25 +13,25 @@ LidDrivenCavity::~LidDrivenCavity(){
 
 //MEMBER FUNCTIONS/////////////////////////////////////////////////
 void LidDrivenCavity::SetDomainSize(double xlen, double ylen){
-    xlen = Lx;
-    ylen = Ly;
+    Lx = xlen;
+    Ly = ylen;
 }
 
 void LidDrivenCavity::SetGridSize(int nx, int ny){
-    nx = Nx;
-    ny = Ny;
+    Nx = nx;
+    Ny = ny;
 }
 
 void LidDrivenCavity::SetTimeStep(double deltat){
-    deltat = dt;
+    dt = deltat;
 }
 
 void LidDrivenCavity::SetFinalTime(double finalt){
-    finalt = T;
+    T = finalt;
 }
 
 void LidDrivenCavity::SetReynoldsNumber(double re){
-    re = Re;
+    Re = re;
 }
 
 void LidDrivenCavity::Initialise(){
