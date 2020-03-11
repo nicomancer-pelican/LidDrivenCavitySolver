@@ -34,6 +34,24 @@ void LidDrivenCavity::SetReynoldsNumber(double re){
     Re = re;
 }
 
+//setters
+int LidDrivenCavity::GetNx() const{
+    return Nx;
+}
+
+int LidDrivenCavity::GetNy() const{
+    return Ny;
+}
+
+double LidDrivenCavity::GetLx() const{
+    return Lx;
+}
+
+double LidDrivenCavity::GetLy() const{
+    return Ly;
+}
+
+//other member functions
 void LidDrivenCavity::Initialise(){
     //pointers to matrices
     v = new double[Nx*Ny];

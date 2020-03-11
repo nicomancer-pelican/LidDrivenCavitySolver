@@ -2,15 +2,12 @@
 #define LIDDRIVENCAVITY_SOLVER_H
 
 #include <string>
-#include "PoissonSolver.h"
 #include <iostream>
 using namespace std;
 
 class LidDrivenCavity
 {
 public:
-    friend class PoissonSolver;
-    
     //CONSTRUCTORS
     LidDrivenCavity();
     ~LidDrivenCavity();
@@ -21,6 +18,11 @@ public:
     void SetTimeStep(double deltat);
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
+    
+    int GetNx() const;
+    int GetNy() const;
+    double GetLx() const;
+    double GetLy() const;
 
     void Initialise();
     void Integrate();
@@ -54,6 +56,7 @@ private:
     double Re;
     //double deltaX;
     //double deltaY;
+    friend class PoissonSolver;
 };
 
 //for std::cout
