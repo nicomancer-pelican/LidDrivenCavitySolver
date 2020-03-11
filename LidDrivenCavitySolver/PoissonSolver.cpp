@@ -18,7 +18,7 @@ PoissonSolver::~PoissonSolver(){
 
 
 //MEMBER FUNCTIONS
-void PoissonSolver::SetA(double* a){
+void PoissonSolver::SetA(LidDrivenCavity& LDC, double* a){
     /*//create matrix A - needs to be transposed for LAPACK
     double A[7][(Nx-2)*(Ny-2)];
     a = &A[0][0];
@@ -31,7 +31,7 @@ void PoissonSolver::SetA(double* a){
         *(a + 12*(Ny - 2) + i) = -1/(deltaX*deltaX);
         *(a + 15*(Ny - 2) + i) = 0.0;
         *(a + 18*(Ny - 2) + i) = -1/(deltaY*deltaY);
-    }
+    }*/
     //non-banded version for now
     double A[(LDC.Nx-2)*(LDC.Ny-2)][(LDC.Nx-2)*(LDC.Ny-2)];
     a = &A[0][0];
@@ -52,7 +52,7 @@ void PoissonSolver::SetA(double* a){
     for(int i=0; i<(LDC.Nx-2); i++){
         *(a + (i+1)*(LDC.Nx-2)*(1 +  (LDC.Ny-2)*(LDC.Nx-3)) + i*(LDC.Nx-2)*(LDC.Ny-2)) = 0.0;
         *(a + (i+1)*((LDC.Nx-2)*(LDC.Nx-2)*(LDC.Ny-2) + (LDC.Nx-3)) + 1) = 0.0;
-    }*/
+    }
 }
 
 void PoissonSolver::SetY(int Nx, int Ny, double* y, double* v){

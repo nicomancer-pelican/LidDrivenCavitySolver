@@ -13,7 +13,7 @@ public:
     ~PoissonSolver();
     
     //MEMBER FUNCTIONS
-    void SetA(double* a);
+    void SetA(LidDrivenCavity& LDC, double* a);
     void SetY(int Nx, int Ny, double* y, double* v);
     
     //step 4 member function

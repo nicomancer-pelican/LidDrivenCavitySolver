@@ -23,13 +23,13 @@ void printMatrix(double* s, int Nx, int Ny){
 int main(int argc, char **argv)
 {
     //inputs here for now
-    double xlen = 1.0;
-    double ylen = 1.0;
+    double xlen = 0.8;
+    double ylen = 0.8;
     int nx = 5;
     int ny = 5;
     double deltat = 0.1;
     double finalt = 1;
-    double Re = 1000;
+    double Re = 100;
     
     // Create a new instance of the LidDrivenCavity class
     LidDrivenCavity* solver = new LidDrivenCavity();
