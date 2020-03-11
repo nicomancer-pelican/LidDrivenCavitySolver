@@ -47,6 +47,13 @@ void LidDrivenCavity::Initialise(){
 void LidDrivenCavity::Integrate(){
 }
 
+void LidDrivenCavity::FirstPart(){
+    horizontalBC();
+    verticalBC();
+    interiorV();
+    newInteriorV();
+}
+
 
 //STEP 1 MEMBER FUNCTIONS
 void LidDrivenCavity::horizontalBC(){
@@ -88,3 +95,16 @@ void LidDrivenCavity::newInteriorV(){
         }
     }
 }
+
+
+
+//getter functions for testing
+double* LidDrivenCavity::getV() const{
+    return v;
+}
+
+double* LidDrivenCavity::getS() const{
+    return s;
+}
+
+

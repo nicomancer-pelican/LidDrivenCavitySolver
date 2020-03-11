@@ -3,6 +3,7 @@
 
 #include <string>
 #include "PoissonSolver.h"
+#include <iostream>
 using namespace std;
 
 class LidDrivenCavity
@@ -23,6 +24,7 @@ public:
 
     void Initialise();
     void Integrate();
+    void FirstPart();
 
     // Add any other public functions
 
@@ -36,6 +38,10 @@ public:
     
     //Step 3 member function
     void newInteriorV(); //interior vorticity at time t+dt
+    
+    //getter functions for testing
+    double* getV() const;
+    double* getS() const;
 
 private:
     double* v = nullptr;
@@ -52,5 +58,9 @@ private:
     double deltaY;
 };
 
+//for std::cout
+inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
+    return os << a.getV();
+}
 
 #endif //LIDDRIVENCAVITY_SOLVER_H
