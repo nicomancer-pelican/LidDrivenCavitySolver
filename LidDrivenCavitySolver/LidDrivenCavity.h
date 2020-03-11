@@ -27,25 +27,23 @@ public:
     void FirstPart();
 
     // Add any other public functions
-
     
-    //Step 1 member functions
-    void horizontalBC(); //vorticity boundary conditions along the top and bottom at time t
-    void verticalBC();   //vorticity bounday conditions along the left and right at time t
+    //Step 1
+    void boundaryConditions(); //vorticity boundary conditions at time t
     
-    //Step 2 member function
-    void interiorV();    //interior voricity at time t
+    //Step 2
+    void interiorV();          //interior voricity at time t
     
-    //Step 3 member function
-    void newInteriorV(); //interior vorticity at time t+dt
+    //Step 3
+    void newInteriorV();       //interior vorticity at time t+dt
     
     //getter functions for testing
     double* getV() const;
     double* getS() const;
 
 private:
-    double* v = nullptr;
-    double* s = nullptr;
+    double* v = nullptr;    //vorticity matrix pointer
+    double* s = nullptr;    //streamfunction matrix pointer
 
     double dt;
     double T;
@@ -54,8 +52,8 @@ private:
     double Lx;
     double Ly;
     double Re;
-    double deltaX;
-    double deltaY;
+    //double deltaX;
+    //double deltaY;
 };
 
 //for std::cout

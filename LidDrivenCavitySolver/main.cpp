@@ -53,7 +53,6 @@ int main(int argc, char **argv)
     cout << endl;
     
     
-    
     delete solver;
 	return 0;
 }
