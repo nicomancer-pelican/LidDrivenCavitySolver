@@ -1,5 +1,3 @@
-Debug/main.cpp.o: main.cpp LidDrivenCavity.h PoissonSolver.h
+Debug/main.cpp.o: main.cpp LidDrivenCavity.h
 
 LidDrivenCavity.h:
-
-PoissonSolver.h:
