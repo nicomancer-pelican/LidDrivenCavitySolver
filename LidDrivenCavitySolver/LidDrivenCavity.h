@@ -3,6 +3,8 @@
 
 #include <string>
 #include <iostream>
+
+#include "PoissonSolver.h"
 using namespace std;
 
 class LidDrivenCavity
@@ -61,7 +63,7 @@ private:
 
 //for std::cout
 inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
-    return os << a.getV();
+    return os << a.getS();
 }
 
 #endif //LIDDRIVENCAVITY_SOLVER_H

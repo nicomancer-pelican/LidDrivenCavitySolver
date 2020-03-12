@@ -7,6 +7,7 @@
 using namespace std;
 
 #include "LidDrivenCavity.h"
+#include "PoissonSolver.h"
 
 //print functions for testing
 void printMatrix(double* s, int Nx, int Ny){
@@ -20,7 +21,7 @@ void printMatrix(double* s, int Nx, int Ny){
     }
     cout << endl;
 }
-/*
+
 //GET ARGUMENTS
 //instructions to user
 void usage(){
@@ -40,6 +41,7 @@ void usage(){
 std::map<string, double> getArgs(int argc, char **argv){
     std::map<string, double> args;
     
+    const char* const short_opts = "h";
     static struct option long_options[] = {
         {"Lx", required_argument, 0, 1},
         {"Ly", required_argument, 0, 2},
@@ -55,7 +57,7 @@ std::map<string, double> getArgs(int argc, char **argv){
     
     int arg;
     do{
-        arg = getopt_long(argc, argv, 0, long_options, 0);
+        arg = getopt_long(argc, argv, short_opts, long_options, 0);
         
         switch(arg){
             case -1: break; //end of argument string
@@ -100,7 +102,7 @@ std::map<string, double> getArgs(int argc, char **argv){
     }
     while(arg != -1);
         return args;
-}*/
+}
 
 
 int main(int argc, char **argv)
@@ -118,7 +120,7 @@ int main(int argc, char **argv)
     LidDrivenCavity* solver = new LidDrivenCavity();
 
     // Configure the solver here...
-    //std::map<string, double> args = getArgs(argc, argv);
+    std::map<string, double> args = getArgs(argc, argv);
     
     solver->SetDomainSize(xlen, ylen);
     solver->SetGridSize(nx, ny);
@@ -129,14 +131,19 @@ int main(int argc, char **argv)
     solver->Initialise();
     
     // Run the solver
-    solver->Integrate();
-    
     solver->FirstPart();
-    double* v = solver->getV();
+    PoissonSolver* poisson = new PoissonSolver();
+    poisson->test(*solver);
+    poisson->SetA(*solver);
+    poisson->SetY(*solver);
+    //poisson->SetY(*solver);
+    //poisson->newInteriorS(*solver);
+    double* s = solver->getS();
     
-    printMatrix(v,nx,ny);
+    printMatrix(s,nx,ny);
     cout << endl;
     
+    solver->Integrate();
     
     delete solver;
 	return 0;

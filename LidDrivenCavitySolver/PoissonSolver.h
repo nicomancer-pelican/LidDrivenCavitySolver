@@ -14,15 +14,16 @@ public:
     ~PoissonSolver();
     
     //MEMBER FUNCTIONS
-    void SetA(LidDrivenCavity& LDC, double* a);
-    void SetY(LidDrivenCavity& LDC, double* y, double* v);
+    void test(const LidDrivenCavity& LDC);
+    void SetA(const LidDrivenCavity& LDC);
+    void SetY(const LidDrivenCavity& LDC);
     
     //step 4 member function
-    void newInteriorS(LidDrivenCavity& LDC);    //interior stream function at time t+dt
+    void newInteriorS(const LidDrivenCavity& LDC);    //interior stream function at time t+dt
 
 private:
-    double* a = nullptr;
-    double* y = nullptr;
+    double* a = nullptr;    //matrix of coefficients
+    double* y = nullptr;    //input: vector of vorticities, output: vector of streamfunctions
 };
 
 #endif //POISSON_SOLVER_H

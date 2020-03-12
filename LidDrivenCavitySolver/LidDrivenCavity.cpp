@@ -62,9 +62,12 @@ void LidDrivenCavity::Integrate(){
 }
 
 void LidDrivenCavity::FirstPart(){
+    //PoissonSolver* poisson = new PoissonSolver();
     boundaryConditions();
     interiorV();
     newInteriorV();
+    //poisson->newInteriorS();
+    //delete poisson;
 }
 
 
