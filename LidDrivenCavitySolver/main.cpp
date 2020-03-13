@@ -108,8 +108,8 @@ std::map<string, double> getArgs(int argc, char **argv){
 int main(int argc, char **argv)
 {
     //inputs here for now
-    double xlen = 0.8;
-    double ylen = 0.8;
+    //double xlen = 0.8;
+    //double ylen = 0.8;
     int nx = 5;
     int ny = 5;
     double deltat = 0.1;
@@ -122,12 +122,12 @@ int main(int argc, char **argv)
     // Configure the solver here...
     std::map<string, double> args = getArgs(argc, argv);
     
-    solver->SetDomainSize(xlen, ylen);
-    solver->SetGridSize(nx, ny);
-    solver->SetTimeStep(deltat);
-    solver->SetFinalTime(finalt);
-    solver->SetReynoldsNumber(Re);
-    
+    solver->SetDomainSize(args["Lx"], args["Ly"]);
+    solver->SetGridSize(args["Nx"], args["Ny"]);
+    solver->SetTimeStep(args["dt"]);
+    solver->SetFinalTime(args["T"]);
+    solver->SetReynoldsNumber(args["Re"]);
+    /*
     solver->Initialise();
     
     // Run the solver
@@ -145,6 +145,6 @@ int main(int argc, char **argv)
     
     solver->Integrate();
     
-    delete solver;
+    delete solver;*/
 	return 0;
 }

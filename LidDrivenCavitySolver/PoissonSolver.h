@@ -17,6 +17,7 @@ public:
     void test(const LidDrivenCavity& LDC);
     void SetA(const LidDrivenCavity& LDC);
     void SetY(const LidDrivenCavity& LDC);
+    void SetX(const LidDrivenCavity& LDC);
     
     //step 4 member function
     void newInteriorS(const LidDrivenCavity& LDC);    //interior stream function at time t+dt
@@ -24,6 +25,7 @@ public:
 private:
     double* a = nullptr;    //matrix of coefficients
     double* y = nullptr;    //input: vector of vorticities, output: vector of streamfunctions
+    double* x = nullptr;    //output of conjugate gradient method - the updated streamfunctions
 };
 
 #endif //POISSON_SOLVER_H

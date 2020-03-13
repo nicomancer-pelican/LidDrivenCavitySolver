@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+
+<valgrindoutput>
+
+<protocolversion>4</protocolversion>
+<protocoltool>memcheck</protocoltool>
+
+<preamble>
+  <line>Memcheck, a memory error detector</line>
+  <line>Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.</line>
+  <line>Using Valgrind-3.14.0 and LibVEX; rerun with -h for copyright info</line>
+  <line>Command: ./LidDrivenCavitySolver</line>
+</preamble>
+
+<pid>29524</pid>
+<ppid>29520</ppid>
+<tool>memcheck</tool>
+
+<args>
+  <vargv>
+    <exe>/usr/bin/valgrind.bin</exe>
+    <arg>--tool=memcheck</arg>
+    <arg>--xml=yes</arg>
+    <arg>--fullpath-after=</arg>
+    <arg>--gen-suppressions=all</arg>
+    <arg>--xml-file=/home/np3217/LidDrivenCavitySolver/.codelite/valgrind.memcheck.log.xml</arg>
+    <arg>--suppressions=/home/np3217/LidDrivenCavitySolver/.codelite/valgrind.memcheck.supp</arg>
+    <arg>--leak-check=yes</arg>
+    <arg>--track-origins=yes</arg>
+  </vargv>
+  <argv>
+    <exe>./LidDrivenCavitySolver</exe>
+  </argv>
+</args>
+
+<status>
+  <state>RUNNING</state>
+  <time>00:00:00:00.276 </time>
+</status>
+
+
+<status>
+  <state>FINISHED</state>
+  <time>00:00:00:01.456 </time>
+</status>
+
+<error>
+  <unique>0x0</unique>
+  <tid>1</tid>
+  <kind>Leak_DefinitelyLost</kind>
+  <xwhat>
+    <text>64 bytes in 1 blocks are definitely lost in loss record 1 of 1</text>
+    <leakedbytes>64</leakedbytes>
+    <leakedblocks>1</leakedblocks>
+  </xwhat>
+  <stack>
+    <frame>
+      <ip>0x4835DEF</ip>
+      <obj>/usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so</obj>
+      <fn>operator new(unsigned long)</fn>
+      <dir>./coregrind/m_replacemalloc</dir>
+      <file>vg_replace_malloc.c</file>
+      <line>334</line>
+    </frame>
+    <frame>
+      <ip>0x10B4B7</ip>
+      <obj>/home/np3217/LidDrivenCavitySolver/LidDrivenCavitySolver/Debug/LidDrivenCavitySolver</obj>
+      <fn>main</fn>
+      <dir>/home/np3217/LidDrivenCavitySolver/LidDrivenCavitySolver</dir>
+      <file>main.cpp</file>
+      <line>120</line>
+    </frame>
+  </stack>
+  <suppression>
+    <sname>insert_a_suppression_name_here</sname>
+    <skind>Memcheck:Leak</skind>
+    <skaux>match-leak-kinds: definite</skaux>
+    <sframe> <fun>_Znwm</fun> </sframe>
+    <sframe> <fun>main</fun> </sframe>
+    <rawtext>
+<![CDATA[
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:main
+}
+]]>
+    </rawtext>
+  </suppression>
+</error>
+
+  <suppression>
+    <sname>insert_a_suppression_name_here</sname>
+    <skind>Memcheck:Leak</skind>
+    <skaux>match-leak-kinds: definite</skaux>
+    <sframe> <fun>_Znwm</fun> </sframe>
+    <sframe> <fun>main</fun> </sframe>
+    <rawtext>
+<![CDATA[
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:main
+}
+]]>
+    </rawtext>
+  </suppression>
+<errorcounts>
+</errorcounts>
+
+<suppcounts>
+</suppcounts>
+
+</valgrindoutput>
+
