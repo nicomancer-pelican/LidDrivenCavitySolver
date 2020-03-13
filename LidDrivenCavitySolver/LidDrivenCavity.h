@@ -56,9 +56,6 @@ private:
     double Lx;
     double Ly;
     double Re;
-    //double deltaX;
-    //double deltaY;
-    friend class PoissonSolver;
 };
 
 //for std::cout

@@ -14,7 +14,7 @@ void printMatrix(double* s, int Nx, int Ny){
     int k = 0;
     for(int j=0; j<Ny; j++){
         for(int i=0; i<Nx; i++){
-            cout << setw(7) << setprecision(2) << fixed << *(s+k) << " ";
+            cout << setw(7) << setprecision(3) << fixed << *(s+k) << " ";
             k++;
         }
         cout << endl;
@@ -107,15 +107,6 @@ std::map<string, double> getArgs(int argc, char **argv){
 
 int main(int argc, char **argv)
 {
-    //inputs here for now
-    //double xlen = 0.8;
-    //double ylen = 0.8;
-    int nx = 5;
-    int ny = 5;
-    double deltat = 0.1;
-    double finalt = 1;
-    double Re = 100;
-    
     // Create a new instance of the LidDrivenCavity class
     LidDrivenCavity* solver = new LidDrivenCavity();
 
@@ -127,24 +118,18 @@ int main(int argc, char **argv)
     solver->SetTimeStep(args["dt"]);
     solver->SetFinalTime(args["T"]);
     solver->SetReynoldsNumber(args["Re"]);
-    /*
-    solver->Initialise();
     
+    solver->Initialise();
+
     // Run the solver
     solver->FirstPart();
-    PoissonSolver* poisson = new PoissonSolver();
-    poisson->test(*solver);
-    poisson->SetA(*solver);
-    poisson->SetY(*solver);
-    //poisson->SetY(*solver);
-    //poisson->newInteriorS(*solver);
+    solver->Integrate();
+
     double* s = solver->getS();
     
-    printMatrix(s,nx,ny);
+    printMatrix(s,args["Nx"],args["Ny"]);
     cout << endl;
     
-    solver->Integrate();
-    
-    delete solver;*/
+    delete solver;
 	return 0;
 }

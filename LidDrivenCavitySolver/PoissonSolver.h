@@ -2,8 +2,6 @@
 #define POISSON_SOLVER_H
 
 using namespace std;
-#include "LidDrivenCavity.h"
-class LidDrivenCavity;
 
 class PoissonSolver
 {
@@ -14,15 +12,27 @@ public:
     ~PoissonSolver();
     
     //MEMBER FUNCTIONS
-    void test(const LidDrivenCavity& LDC);
-    void SetA(const LidDrivenCavity& LDC);
-    void SetY(const LidDrivenCavity& LDC);
-    void SetX(const LidDrivenCavity& LDC);
+    void SetDomainSize(double xlen, double ylen);
+    void SetGridSize(int nx, int ny);
+    void SetV(double* V);
+    void SetS(double* S);
+    
+    void SetA();
+    void SetY();
+    void SetX();
     
     //step 4 member function
-    void newInteriorS(const LidDrivenCavity& LDC);    //interior stream function at time t+dt
+    void newInteriorS();    //interior stream function at time t+dt
+    
+    double* getX() const;
 
 private:
+    int    Nx;
+    int    Ny;
+    double Lx;
+    double Ly;
+    double* v = nullptr;
+    double* s = nullptr;
     double* a = nullptr;    //matrix of coefficients
     double* y = nullptr;    //input: vector of vorticities, output: vector of streamfunctions
     double* x = nullptr;    //output of conjugate gradient method - the updated streamfunctions

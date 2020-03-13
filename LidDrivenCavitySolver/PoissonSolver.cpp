@@ -19,24 +19,40 @@ PoissonSolver::~PoissonSolver(){
 
 
 //MEMBER FUNCTIONS
-void PoissonSolver::test(const LidDrivenCavity& LDC){
-    
+void PoissonSolver::SetDomainSize(double xlen, double ylen){
+    Lx = xlen;
+    Ly = ylen;
 }
 
-void PoissonSolver::SetA(const LidDrivenCavity& LDC){
-    const double deltaX = LDC.Lx/(LDC.Nx-1);
-    const double deltaY = LDC.Ly/(LDC.Ny-1);
+void PoissonSolver::SetGridSize(int nx, int ny){
+    Nx = nx;
+    Ny = ny;
+}
+
+void PoissonSolver::SetV(double* V){
+    v = V;
+}
+
+void PoissonSolver::SetS(double* S){
+    s = S;
+}
+
+void PoissonSolver::SetA(){
+    const double deltaX = Lx/(Nx-1);
+    const double deltaY = Ly/(Ny-1);
     
     //create matrix A - symmetric upper triangle
-    int dim = (LDC.Nx-2)*(LDC.Ny-2);
-    double A[dim*dim];
-    double* a = &A[0];
+    int dim = (Nx-2)*(Ny-2);
+    double A[dim*dim] = {0.0};
+    a = &A[0];
     for(int j=0; j<dim; j++){
         for(int i=0; i<dim; i++){
             if(i==j){
                 *(a + j*dim + i) = 2*((1/deltaX)+(1/deltaY));
-                *(a + j*dim + i + (LDC.Nx-2)) = -1/(deltaY*deltaY);
-                if(i%(LDC.Nx-2) != 0){
+                if(j*dim + i + (Nx-2) < dim*dim){
+                    *(a + j*dim + i + (Nx-2)) = -1/(deltaY*deltaY);
+                }
+                if(i%(Nx-2) != 0 && (j-1)*dim + i < dim*dim){
                     *(a + (j-1)*dim + i) = -1/(deltaX*deltaX);
                 }
             }
@@ -44,33 +60,31 @@ void PoissonSolver::SetA(const LidDrivenCavity& LDC){
     }
 }
 
-void PoissonSolver::SetY(const LidDrivenCavity& LDC){
-    double Y[(LDC.Nx-2)*(LDC.Ny-2)];
+void PoissonSolver::SetY(){
+    double Y[(Nx-2)*(Ny-2)];
     y = &Y[0];
     int k = 0;
-    for(int j=1; j<LDC.Ny-1; j++){
-        for(int i=1; i<LDC.Nx-1; i++){
-            *(y + k) = *(LDC.v + j*LDC.Nx + i);//omega[i][j];
+    for(int j=1; j<Ny-1; j++){
+        for(int i=1; i<Nx-1; i++){
+            *(y + k) = *(v + j*Nx + i);//omega[i][j];
             k ++;
         }
     }
 }
 
-void PoissonSolver::SetX(const LidDrivenCavity& LDC){
-    double X[(LDC.Nx-2)*(LDC.Ny-2)];
+void PoissonSolver::SetX(){
+    double X[(Nx-2)*(Ny-2)];
     x = &X[0];
 }
 
-void PoissonSolver::newInteriorS(const LidDrivenCavity& LDC){
-    int n = (LDC.Nx-2)*(LDC.Ny-2);
+void PoissonSolver::newInteriorS(){
+    int n = (Nx-2)*(Ny-2);
     double R[n] = {0.0};
     double* r = &R[0];
     double P[n] = {0.0};
     double* p = &P[0];
     double T[n] = {0.0};
     double* t = &T[0];  //temp vector for r vector
-    double X[n] = {0.0};
-    double* x = &X[0];  //x_0
     int k = 0;
     double alpha;
     double beta;
@@ -104,8 +118,8 @@ void PoissonSolver::newInteriorS(const LidDrivenCavity& LDC){
         
         k++;
     } while(k<5000);
-    
-    delete r;
-    delete p;
-    delete t;
+}
+
+double* PoissonSolver::getX() const{
+    return x;
 }
