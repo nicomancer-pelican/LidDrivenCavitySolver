@@ -13,31 +13,14 @@ extern "C" {
 PoissonSolver::PoissonSolver(){
 }
 
+
 PoissonSolver::~PoissonSolver(){
 }
 
 
 
 //MEMBER FUNCTIONS
-void PoissonSolver::SetDomainSize(double xlen, double ylen){
-    Lx = xlen;
-    Ly = ylen;
-}
-
-void PoissonSolver::SetGridSize(int nx, int ny){
-    Nx = nx;
-    Ny = ny;
-}
-
-void PoissonSolver::SetV(double* V){
-    v = V;
-}
-
-void PoissonSolver::SetS(double* S){
-    s = S;
-}
-
-void PoissonSolver::SetA(){
+double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
     
@@ -58,9 +41,10 @@ void PoissonSolver::SetA(){
             }
         }
     }
+    return a;
 }
 
-void PoissonSolver::SetY(){
+double* PoissonSolver::SetY(int Nx, int Ny, double* v){
     double Y[(Nx-2)*(Ny-2)];
     y = &Y[0];
     int k = 0;
@@ -70,14 +54,20 @@ void PoissonSolver::SetY(){
             k ++;
         }
     }
+    return y;
 }
 
-void PoissonSolver::SetX(){
+double* PoissonSolver::SetX(int Nx, int Ny){
     double X[(Nx-2)*(Ny-2)];
     x = &X[0];
+    return x;
 }
 
-void PoissonSolver::newInteriorS(){
+double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, double* v, double* s){
+    a = SetA(Lx, Ly, Nx, Ny);
+    y = SetY(Nx, Ny, v);
+    x = SetX(Nx, Ny);
+    
     int n = (Nx-2)*(Ny-2);
     double R[n] = {0.0};
     double* r = &R[0];
@@ -118,8 +108,6 @@ void PoissonSolver::newInteriorS(){
         
         k++;
     } while(k<5000);
-}
-
-double* PoissonSolver::getX() const{
+    
     return x;
 }

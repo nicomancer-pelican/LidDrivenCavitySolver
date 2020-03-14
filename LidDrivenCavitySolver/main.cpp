@@ -125,7 +125,7 @@ int main(int argc, char **argv)
     solver->FirstPart();
     solver->Integrate();
 
-    double* s = solver->getS();
+    double* s = solver->getV();
     
     printMatrix(s,args["Nx"],args["Ny"]);
     cout << endl;

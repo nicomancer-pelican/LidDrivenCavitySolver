@@ -34,7 +34,7 @@ void LidDrivenCavity::SetReynoldsNumber(double re){
     Re = re;
 }
 
-//setters
+/*//getters
 int LidDrivenCavity::GetNx() const{
     return Nx;
 }
@@ -49,7 +49,7 @@ double LidDrivenCavity::GetLx() const{
 
 double LidDrivenCavity::GetLy() const{
     return Ly;
-}
+}*/
 
 //other member functions
 void LidDrivenCavity::Initialise(){
@@ -67,15 +67,7 @@ void LidDrivenCavity::FirstPart(){
     newInteriorV();
     
     PoissonSolver* poisson = new PoissonSolver();
-    poisson->SetDomainSize(Lx, Ly);
-    poisson->SetGridSize(Nx, Ny);
-    poisson->SetV(v);
-    poisson->SetS(s);
-    poisson->SetA();
-    poisson->SetY();
-    poisson->SetX();
-    poisson->newInteriorS();
-    poisson->getX();
+    poisson->Execute(Lx, Ly, Nx, Ny, v, s);
     delete poisson;
 }
 

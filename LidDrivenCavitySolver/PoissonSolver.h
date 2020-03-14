@@ -11,28 +11,15 @@ public:
     PoissonSolver();
     ~PoissonSolver();
     
-    //MEMBER FUNCTIONS
-    void SetDomainSize(double xlen, double ylen);
-    void SetGridSize(int nx, int ny);
-    void SetV(double* V);
-    void SetS(double* S);
-    
-    void SetA();
-    void SetY();
-    void SetX();
+    //MEMBER FUNCTIONS    
+    double* SetA(double Lx, double Ly, int Nx, int Ny);
+    double* SetY(int Nx, int Ny, double* v);
+    double* SetX(int Nx, int Ny);
     
     //step 4 member function
-    void newInteriorS();    //interior stream function at time t+dt
-    
-    double* getX() const;
+    double* Execute(double Lx, double Ly, int Nx, int Ny, double* v, double* s);    //interior stream function at time t+dt
 
 private:
-    int    Nx;
-    int    Ny;
-    double Lx;
-    double Ly;
-    double* v = nullptr;
-    double* s = nullptr;
     double* a = nullptr;    //matrix of coefficients
     double* y = nullptr;    //input: vector of vorticities, output: vector of streamfunctions
     double* x = nullptr;    //output of conjugate gradient method - the updated streamfunctions

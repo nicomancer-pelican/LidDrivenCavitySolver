@@ -20,11 +20,11 @@ public:
     void SetTimeStep(double deltat);
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
-    
+    /*
     int GetNx() const;
     int GetNy() const;
     double GetLx() const;
-    double GetLy() const;
+    double GetLy() const;*/
 
     void Initialise();
     void Integrate();
@@ -60,7 +60,7 @@ private:
 
 //for std::cout
 inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
-    return os << a.getS();
+    return os << a.getV();
 }
 
 #endif //LIDDRIVENCAVITY_SOLVER_H
