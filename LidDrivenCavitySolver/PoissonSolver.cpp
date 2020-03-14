@@ -26,8 +26,7 @@ double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
     
     //create matrix A - symmetric upper triangle
     int dim = (Nx-2)*(Ny-2);
-    double A[dim*dim] = {0.0};
-    a = &A[0];
+    a = new double[dim*dim];
     for(int j=0; j<dim; j++){
         for(int i=0; i<dim; i++){
             if(i==j){
@@ -45,8 +44,7 @@ double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
 }
 
 double* PoissonSolver::SetY(int Nx, int Ny, double* v){
-    double Y[(Nx-2)*(Ny-2)];
-    y = &Y[0];
+    y = new double[(Nx-2)*(Ny-2)];
     int k = 0;
     for(int j=1; j<Ny-1; j++){
         for(int i=1; i<Nx-1; i++){
@@ -58,8 +56,7 @@ double* PoissonSolver::SetY(int Nx, int Ny, double* v){
 }
 
 double* PoissonSolver::SetX(int Nx, int Ny){
-    double X[(Nx-2)*(Ny-2)];
-    x = &X[0];
+    x = new double[(Nx-2)*(Ny-2)];
     return x;
 }
 
@@ -108,6 +105,8 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, double* v, 
         
         k++;
     } while(k<5000);
-    
+
+    delete a; a = nullptr;
+    delete y; y = nullptr;
     return x;
 }

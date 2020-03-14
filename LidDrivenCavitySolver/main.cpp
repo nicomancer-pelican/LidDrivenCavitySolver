@@ -14,7 +14,7 @@ void printMatrix(double* s, int Nx, int Ny){
     int k = 0;
     for(int j=0; j<Ny; j++){
         for(int i=0; i<Nx; i++){
-            cout << setw(7) << setprecision(3) << fixed << *(s+k) << " ";
+            cout << setw(9) << setprecision(5) << fixed << *(s+k) << " ";
             k++;
         }
         cout << endl;
@@ -122,7 +122,6 @@ int main(int argc, char **argv)
     solver->Initialise();
 
     // Run the solver
-    solver->FirstPart();
     solver->Integrate();
 
     double* s = solver->getV();

@@ -6,7 +6,6 @@ using namespace std;
 class PoissonSolver
 {
 public:
-    //LidDrivenCavity* temp = new LidDrivenCavity();
     //CONSTRUCTORS
     PoissonSolver();
     ~PoissonSolver();

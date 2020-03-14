@@ -59,16 +59,14 @@ void LidDrivenCavity::Initialise(){
 }
 
 void LidDrivenCavity::Integrate(){
-}
-
-void LidDrivenCavity::FirstPart(){
-    boundaryConditions();
-    interiorV();
-    newInteriorV();
-    
     PoissonSolver* poisson = new PoissonSolver();
-    poisson->Execute(Lx, Ly, Nx, Ny, v, s);
-    delete poisson;
+    
+    for(double t=0.0; t<T; t+=dt){
+        boundaryConditions();
+        interiorV();
+        newInteriorV();
+        updateS(poisson->Execute(Lx, Ly, Nx, Ny, v, s));
+    }
 }
 
 
@@ -118,6 +116,17 @@ void LidDrivenCavity::newInteriorV(){
                               +(((*(s + j*Nx + i + 1) - *(s + j*Nx + i - 1)) / (2*deltaX))
                                *((*(v + Nx*(j+1) + i) - *(v + Nx*(j-1) + i)) / (2*deltaY)))
                                 );
+        }
+    }
+}
+
+//STEP 4 MEMBER FUNCTION
+void LidDrivenCavity::updateS(double* x){
+    int k = 0;
+    for(int j=1; j<Ny-1; j++){
+        for(int i=1; i<Nx-1; i++){
+            *(s + j*Nx + i) = *(x + k);//omega[i][j];
+            k ++;
         }
     }
 }

@@ -20,26 +20,20 @@ public:
     void SetTimeStep(double deltat);
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
-    /*
-    int GetNx() const;
-    int GetNy() const;
-    double GetLx() const;
-    double GetLy() const;*/
 
     void Initialise();
     void Integrate();
-    void FirstPart();
 
     // Add any other public functions
     
     //Step 1
     void boundaryConditions(); //vorticity boundary conditions at time t
-    
     //Step 2
     void interiorV();          //interior voricity at time t
-    
     //Step 3
     void newInteriorV();       //interior vorticity at time t+dt
+    //Step 4
+    void updateS(double* x); //interior stream function at time t+dt
     
     //getter functions for testing
     double* getV() const;
