@@ -34,22 +34,7 @@ void LidDrivenCavity::SetReynoldsNumber(double re){
     Re = re;
 }
 
-/*//getters
-int LidDrivenCavity::GetNx() const{
-    return Nx;
-}
 
-int LidDrivenCavity::GetNy() const{
-    return Ny;
-}
-
-double LidDrivenCavity::GetLx() const{
-    return Lx;
-}
-
-double LidDrivenCavity::GetLy() const{
-    return Ly;
-}*/
 
 //other member functions
 void LidDrivenCavity::Initialise(){
@@ -94,10 +79,12 @@ void LidDrivenCavity::boundaryConditions(){
 void LidDrivenCavity::interiorV(){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
+    const double X2     = deltaX*deltaX;
+    const double Y2     = deltaY*deltaY;
     for(int j=1; j<Ny-1; j++){
         for(int i=1; i<Nx-1; i++){
-            *(v + j*Nx + i) = -(*(s + j*Nx + i + 1) - *(s + j*Nx + i)*2 + *(s + j*Nx + i - 1))*(2/(deltaX*deltaX))
-                              -(*(s + Nx*(j+1) + i) - *(s + j*Nx + i)*2 + *(s + Nx*(j-1) + i))*(2/(deltaY*deltaY));
+            *(v + j*Nx + i) =  ((*(s + j*Nx + i + 1) - *(s + j*Nx + i)*2 + *(s + j*Nx + i - 1)) / X2)
+                              +((*(s + (j+1)*Nx + i) - *(s + j*Nx + i)*2 + *(s + (j-1)*Nx + i)) / Y2);
         }
     }
 }
@@ -106,11 +93,13 @@ void LidDrivenCavity::interiorV(){
 void LidDrivenCavity::newInteriorV(){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
+    const double X2     = deltaX*deltaX;
+    const double Y2     = deltaY*deltaY;
     for(int j=1; j<Ny-1; j++){
         for(int i=1; i<Nx-1; i++){
             *(v + j*Nx + i) = *(v + j*Nx + i) + dt*(
-                               (1/Re) * (((*(v + j*Nx + i + 1) - *(v + j*Nx + i)*2 + *(v + j*Nx + i - 1)) / (deltaX*deltaX))
-                                        -((*(v + Nx*(j+1) + i) - *(v + j*Nx + i)*2 + *(v + Nx*(j-1) + i)) / (deltaY*deltaY)))
+                               (1/Re) * (((*(v + j*Nx + i + 1) - *(v + j*Nx + i)*2 + *(v + j*Nx + i - 1)) / X2)
+                                        +((*(v + Nx*(j+1) + i) - *(v + j*Nx + i)*2 + *(v + Nx*(j-1) + i)) / Y2))
                               -(((*(s + Nx*(j+1) + i) - *(s + Nx*(j-1) + i)) / (2*deltaY))
                                *((*(v + j*Nx + i + 1) - *(v + j*Nx + i - 1)) / (2 *deltaX)))
                               +(((*(s + j*Nx + i + 1) - *(s + j*Nx + i - 1)) / (2*deltaX))

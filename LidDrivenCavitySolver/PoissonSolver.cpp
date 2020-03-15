@@ -1,14 +1,6 @@
 #include "PoissonSolver.h"
 #include "cblas.h"
 
-//LAPACK stuff
-#define F77NAME(x) x##_
-extern "C" {
-    void F77NAME(dgesv)(const int& n, const int& nrhs, const double * A,
-                        const int& lda, int * ipiv, double * B,
-                        const int& ldb, int& info);
-}
-
 //CONSTRUCTORS
 PoissonSolver::PoissonSolver(){
 }
@@ -23,6 +15,8 @@ PoissonSolver::~PoissonSolver(){
 double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
+    const double X2 = deltaX*deltaX;
+    const double Y2 = deltaY*deltaY;
     
     //create matrix A - symmetric upper triangle
     int dim = (Nx-2)*(Ny-2);
@@ -30,12 +24,12 @@ double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
     for(int j=0; j<dim; j++){
         for(int i=0; i<dim; i++){
             if(i==j){
-                *(a + j*dim + i) = 2*((1/deltaX)+(1/deltaY));
+                *(a + j*dim + i) = 2*((1/X2)+(1/Y2));
                 if(j*dim + i + (Nx-2) < dim*dim){
-                    *(a + j*dim + i + (Nx-2)) = -1/(deltaY*deltaY);
+                    *(a + j*dim + i + (Nx-2)) = -1/Y2;
                 }
                 if(i%(Nx-2) != 0 && (j-1)*dim + i < dim*dim){
-                    *(a + (j-1)*dim + i) = -1/(deltaX*deltaX);
+                    *(a + (j-1)*dim + i) = -1/X2;
                 }
             }
         }
@@ -76,7 +70,7 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, double* v, 
     double alpha;
     double beta;
     double eps;
-    double tol = 0.00001;
+    double tol = 0.0001;
     
     //setup things
     cblas_dcopy(n, y, 1, r, 1); //r_0 = b (i.e. y)
@@ -85,6 +79,7 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, double* v, 
     //loop
     do{
         cblas_dsymv(CblasRowMajor, CblasUpper, n, 1.0, a, n, p, 1, 0.0, t, 1); //t = A*p_k
+       
         alpha = cblas_ddot(n, t, 1, p, 1);          //alpha = trans(p_k) * A * p_k
         alpha = cblas_ddot(n, r, 1, r, 1) / alpha;  //alpha_k = trans(r_k) * r_k / trans(p_k) * A * p_k
         beta  = cblas_ddot(n, r, 1, r, 1);          //trans(r_k) * r_k

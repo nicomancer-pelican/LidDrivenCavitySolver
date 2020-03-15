@@ -14,7 +14,7 @@ void printMatrix(double* s, int Nx, int Ny){
     int k = 0;
     for(int j=0; j<Ny; j++){
         for(int i=0; i<Nx; i++){
-            cout << setw(9) << setprecision(5) << fixed << *(s+k) << " ";
+            cout << setw(15) << setprecision(5) << fixed << *(s+k) << " ";
             k++;
         }
         cout << endl;
@@ -107,12 +107,16 @@ std::map<string, double> getArgs(int argc, char **argv){
 
 int main(int argc, char **argv)
 {
+    //gather inputs
+    std::map<string, double> args = getArgs(argc, argv);
+    //test user inputs for validity - look into using assert
+    //Nx, Ny > 2 as there must be at least one internal point
+    //check Courant–Friedrichs–Lewy condition is satisfied (Cmax = 1 as this is explicit)
+    
     // Create a new instance of the LidDrivenCavity class
     LidDrivenCavity* solver = new LidDrivenCavity();
 
     // Configure the solver here...
-    std::map<string, double> args = getArgs(argc, argv);
-    
     solver->SetDomainSize(args["Lx"], args["Ly"]);
     solver->SetGridSize(args["Nx"], args["Ny"]);
     solver->SetTimeStep(args["dt"]);
@@ -124,7 +128,7 @@ int main(int argc, char **argv)
     // Run the solver
     solver->Integrate();
 
-    double* s = solver->getV();
+    double* s = solver->getS();
     
     printMatrix(s,args["Nx"],args["Ny"]);
     cout << endl;
