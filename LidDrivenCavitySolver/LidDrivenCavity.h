@@ -20,12 +20,15 @@ public:
     void SetTimeStep(double deltat);
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
+    void SetPartitions(int px, int py);
+    
+    void SetRank(int Rank);
 
     void Initialise();
     void Integrate();
 
-    // Add any other public functions
-    
+    //Adding guard cells
+    void guardCells();
     //Step 1
     void boundaryConditions(); //vorticity boundary conditions at time t
     //Step 2
@@ -47,14 +50,28 @@ private:
     double T;
     int    Nx;
     int    Ny;
+    int    Px;
+    int    Py;
     double Lx;
     double Ly;
     double Re;
+    
+    int nx;     //local size (Nx/Px)
+    int ny;     //local size (Ny/Py)
+    int augX;   //augmented size (nx+2)
+    int augY;   //augmented size (ny+2)
+    
+    int startRow;
+    int startCol;
+    int endRow;
+    int endCol;
+    
+    int rank;
 };
 
 //for std::cout
 inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
-    return os << a.getS();
+    return os << a.getV();
 }
 
 #endif //LIDDRIVENCAVITY_SOLVER_H

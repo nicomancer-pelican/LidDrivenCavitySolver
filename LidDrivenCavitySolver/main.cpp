@@ -4,6 +4,7 @@
 #include <string>
 #include <getopt.h>
 #include <map>
+#include <mpi.h>
 using namespace std;
 
 #include "LidDrivenCavity.h"
@@ -122,16 +123,63 @@ int main(int argc, char **argv)
     solver->SetTimeStep(args["dt"]);
     solver->SetFinalTime(args["T"]);
     solver->SetReynoldsNumber(args["Re"]);
+    solver->SetPartitions(args["Px"], args["Py"]);
     
     solver->Initialise();
-
+    
+    
+    //initialise MPI
+    int retval = MPI_Init(&argc, &argv);
+    if(retval != MPI_SUCCESS){
+        cout << "an error occured initialising MPI" << endl;
+    }
+    
+    //find rank
+    int Rank, Size, retval_Rank, retval_Size;
+    retval_Rank = MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
+    retval_Size = MPI_Comm_size(MPI_COMM_WORLD, &Size);
+    if(retval_Rank == MPI_ERR_COMM || retval_Size == MPI_ERR_COMM){
+        cout << "invalid communicator" << endl;
+        return 1;
+    }
+    solver->SetRank(Rank);
+    
     // Run the solver
     solver->Integrate();
-
-    double* s = solver->getS();
     
-    printMatrix(s,args["Nx"],args["Ny"]);
+    
+    double* v = solver->getV();
+    int dim1 = args["Nx"]/args["Px"] + 2;
+    int dim2 = args["Ny"]/args["Py"] + 2;
+    double* out;
+    double* disp;
+    
+    if(Rank == 0){
+        out = new double[dim1*dim2*Size];
+    }
+    
+    MPI_Gather(v, dim1*dim2, MPI_DOUBLE, out, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    
+    //cout << "rank: " << Rank << endl;
+    //printMatrix(v, dim1, dim2);
+    if(Rank == 0){
+        //disp = new double[(dim1-2)*(dim2-2)];
+        for(int k=1; k<dim2-1; k++){
+            for(int j=0; j<Size; j++){
+                for(int i=1; i<dim1-1; i++){
+                    //*(disp + k) = *(out + dim1*(C1 - 1 + dim2*(R1 - 1)) + (C2 - 1 + dim1*(R2 - 1)));
+                    cout << setw(12) << setprecision(4) << *(out + dim1*dim2*j + (i + k*dim1));
+                }
+                cout << endl;
+            }
+            cout << endl;
+        }
+    }
     cout << endl;
+    
+    
+    //finalise MPI
+    MPI_Finalize();
     
     delete solver;
 	return 0;
