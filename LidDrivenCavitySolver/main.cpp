@@ -163,47 +163,13 @@ int main(int argc, char **argv)
     MPI_Gather(v, dim1*dim2, MPI_DOUBLE, out, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
     if(Rank == 0){
-        /*int r = 0;
-        int k = 0;
-        int s = 0;
-        while(k<Px && k<Py){
-            for(int j=1; j<dim2-1; j++){
-                s=0;
-                r=0;
-                while(r<Px){
-                    for(int i=1; i<dim1-1; i++){
-                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + j*dim1));
-                    }
-                    r++;
-                    s++;
-                    
-                }
-                cout << endl;
-            }
-            
-            s++;
-            while(r<Py){
-                s=0;
-                while(s<dim2-2){
-                    s++;
-                    for(int i=1; i<dim1-1; i++){
-                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + s*dim1));
-                    }
-                    cout << endl;
-                }
-                r++;
-            }
-            
-            k++;
-        }*/
-        
         int k = 0;
         int count = 0;
         int j = 0;
         int r = 0;
         
         while(k < Size){
-            while(count < Py){
+            while(count < Size){
                 for(int a = 1; a<dim2-1; a++){
                     j = 0;
                     r = count;
