@@ -25,6 +25,7 @@ double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
     int Ay = Ny - 2;
     int Dim = Ax*Ay;
     
+    A = new double[Dim*Dim];
     for(int j=0; j<Dim; j++){
         for(int i=0; i<Dim; i++){
             if(i==j){
@@ -63,6 +64,8 @@ double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, i
     
     //create matrix a (symmetric upper triangle) - coefficient matrix for the 'local' case
     int k = 0;
+    
+    a = new double[dim*dim];
     for(int R1 = globalStartRow; R1 <= globalEndRow; R1++){
         for(int C1 = globalStartCol; C1 <= globalEndCol; C1++){
             for(int R2 = globalStartRow; R2 <= globalEndRow; R2++){
