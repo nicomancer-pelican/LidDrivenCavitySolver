@@ -168,7 +168,7 @@ int main(int argc, char **argv)
         int j = 0;
         int r = 0;
         
-        while(k < Size){
+        //while(k < Size){
             while(count < Size){
                 for(int a = 1; a<dim2-1; a++){
                     j = 0;
@@ -185,7 +185,7 @@ int main(int argc, char **argv)
                 }
                 count += Px;
             }
-        }
+        //}
     }
     
     
