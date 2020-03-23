@@ -11,15 +11,19 @@ public:
     ~PoissonSolver();
     
     //MEMBER FUNCTIONS    
-    double* SetA(double Lx, double Ly, int Nx, int Ny);
-    double* SetY(int Nx, int Ny, double* v);
-    double* SetX(int Nx, int Ny);
+    double* SetGlobalA(double Lx, double Ly, int Nx, int Ny);
+    double* SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, int rank);
+    double* SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v);
+    double* SetX(int Nx, int Ny, int Px, int Py);
+    
+    void InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, int rank);
     
     //step 4 member function
-    double* Execute(double Lx, double Ly, int Nx, int Ny, double* v, double* s);    //interior stream function at time t+dt
+    double* Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, double* v, double* s);    //interior stream function at time t+dt
 
 private:
-    double* a = nullptr;    //matrix of coefficients
+    double* A = nullptr;    //matrix of coefficients - global
+    double* a = nullptr;    //matrix of coefficients - local to processor
     double* y = nullptr;    //input: vector of vorticities, output: vector of streamfunctions
     double* x = nullptr;    //output of conjugate gradient method - the updated streamfunctions
 };

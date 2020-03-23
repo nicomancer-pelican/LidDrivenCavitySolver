@@ -111,7 +111,7 @@ int main(int argc, char **argv)
     //gather inputs
     std::map<string, double> args = getArgs(argc, argv);
     //test user inputs for validity - look into using assert
-    //Nx, Ny > 2 as there must be at least one internal point
+    //Nx/Px, Ny/Py > 2 as there must be at least one internal point
     //check Courant–Friedrichs–Lewy condition is satisfied (Cmax = 1 as this is explicit)
     
     // Create a new instance of the LidDrivenCavity class

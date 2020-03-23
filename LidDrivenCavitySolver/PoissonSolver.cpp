@@ -13,37 +13,78 @@ PoissonSolver::~PoissonSolver(){
 
 //MEMBER FUNCTIONS
 
-//create the matrix coefficient A for the global problem
-double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
+//create the coefficient matrix A for the global problem
+double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
     const double X2 = deltaX*deltaX;
     const double Y2 = deltaY*deltaY;
     
     //create matrix A - symmetric upper triangle
-    int dim = (Nx-2)*(Ny-2);
-    a = new double[dim*dim];
-    for(int j=0; j<dim; j++){
-        for(int i=0; i<dim; i++){
+    int Ax = Nx - 2;
+    int Ay = Ny - 2;
+    int Dim = Ax*Ay;
+    
+    for(int j=0; j<Dim; j++){
+        for(int i=0; i<Dim; i++){
             if(i==j){
-                *(a + j*dim + i) = 2*((1/X2)+(1/Y2));
-                if(j*dim + i + (Nx-2) < dim*dim){
-                    *(a + j*dim + i + (Nx-2)) = -1/Y2;
+                *(A + j*Dim + i) = 2*((1/X2)+(1/Y2));
+                /*if((j*Dim + i + Ax) < (Dim*Dim - Ay*Dim)){
+                    *(A + j*Dim + i + Ax) = -1/Y2;
                 }
-                if(i%(Nx-2) != 0 && (j-1)*dim + i < dim*dim){
-                    *(a + (j-1)*dim + i) = -1/X2;
+                if((j-(Ax-1))%Ax != 0){
+                    *(A + j*Dim + i + 1) = -1/X2;
+                }*/
+            }
+        }
+    }
+    
+    return A;
+}
+
+//create the coefficient matrix a for the local problem
+double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, int rank){
+    int Ax = Nx - 2;
+    int Ay = Ny - 2;
+    int Dim = Ax*Ay;
+    
+    //relate local start and end points to the global
+    int rankCol = rank%Px;
+    int globalStartCol = (startCol - 1) + 2*rankCol;
+    int globalEndCol   = globalStartCol + endCol - startCol;
+    
+    int rankRow = rank/Py;
+    int globalStartRow = (startRow - 1) + 2*rankRow;
+    int globalEndRow   = globalStartRow + endRow - startRow;
+    
+    int ax = globalEndCol - globalStartCol + 1;
+    int ay = globalEndRow - globalStartRow + 1;
+    int dim = ax*ay;
+    
+    //create matrix a (symmetric upper triangle) - coefficient matrix for the 'local' case
+    int k = 0;
+    for(int R1 = globalStartRow; R1 <= globalEndRow; R1++){
+        for(int C1 = globalStartCol; C1 <= globalEndCol; C1++){
+            for(int R2 = globalStartRow; R2 <= globalEndRow; R2++){
+                for(int C2 = globalStartCol; C2 <= globalEndCol; C2++){
+                    *(a + k) = *(A + Dim*(C1-1 + Ay*(R1-1)) + (C2-1 + Ax*(R2-1)));
+                    k++;
                 }
             }
         }
     }
+    
     return a;
 }
 
-double* PoissonSolver::SetY(int Nx, int Ny, double* v){
-    y = new double[(Nx-2)*(Ny-2)];
+double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v){
+    int nx = Nx/Px;
+    int ny = Ny/Py;
+    
+    y = new double[(nx-2)*(ny-2)];
     int k = 0;
-    for(int j=1; j<Ny-1; j++){
-        for(int i=1; i<Nx-1; i++){
+    for(int j=startRow; j<=endRow; j++){
+        for(int i=startCol; i<=endCol; i++){
             *(y + k) = *(v + j*Nx + i);//omega[i][j];
             k ++;
         }
@@ -51,17 +92,26 @@ double* PoissonSolver::SetY(int Nx, int Ny, double* v){
     return y;
 }
 
-double* PoissonSolver::SetX(int Nx, int Ny){
-    x = new double[(Nx-2)*(Ny-2)];
+double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py){
+    int nx = Nx/Px;
+    int ny = Ny/Py;
+    
+    x = new double[(nx-2)*(ny-2)];
     return x;
 }
 
-double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, double* v, double* s){
-    a = SetA(Lx, Ly, Nx, Ny);
-    y = SetY(Nx, Ny, v);
-    x = SetX(Nx, Ny);
+void PoissonSolver::InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, int rank){
+    SetGlobalA(Lx, Ly, Nx, Ny);
+    SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
+    SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
+    SetX(Nx, Ny, Px, Py);
+}
+
+double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, double* v, double* s){
+    int nx = Nx/Px;
+    int ny = Ny/Py;
     
-    int n = (Nx-2)*(Ny-2);
+    int n = (nx-2)*(ny-2);
     double R[n] = {0.0};
     double* r = &R[0];
     double P[n] = {0.0};
