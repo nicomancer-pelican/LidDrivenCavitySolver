@@ -153,6 +153,8 @@ int main(int argc, char **argv)
     int dim2 = args["Ny"]/args["Py"] + 2;
     double* out;
     double* disp;
+    int Px = args["Px"];
+    int Py = args["Py"];
     
     if(Rank == 0){
         out = new double[dim1*dim2*Size];
@@ -160,22 +162,42 @@ int main(int argc, char **argv)
     
     MPI_Gather(v, dim1*dim2, MPI_DOUBLE, out, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
-    //cout << "rank: " << Rank << endl;
-    //printMatrix(v, dim1, dim2);
     if(Rank == 0){
-        //disp = new double[(dim1-2)*(dim2-2)];
-        for(int k=1; k<dim2-1; k++){
-            for(int j=0; j<Size; j++){
-                for(int i=1; i<dim1-1; i++){
-                    //*(disp + k) = *(out + dim1*(C1 - 1 + dim2*(R1 - 1)) + (C2 - 1 + dim1*(R2 - 1)));
-                    cout << setw(12) << setprecision(4) << *(out + dim1*dim2*j + (i + k*dim1));
+        int r = 0;
+        int k = 0;
+        int s = 0;
+        while(k<Px && k<Py){
+            for(int j=1; j<dim2-1; j++){
+                s=0;
+                r=0;
+                while(r<Px){
+                    for(int i=1; i<dim1-1; i++){
+                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + j*dim1));
+                    }
+                    r++;
+                    s++;
+                    
                 }
                 cout << endl;
             }
-            cout << endl;
+            //r=0;
+            s++;
+            while(r<Py){
+                s=0;
+                while(s<dim2-2){
+                    s++;
+                    for(int i=1; i<dim1-1; i++){
+                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + s*dim1));
+                    }
+                    cout << endl;
+                    //s++;
+                    //r++;
+                }
+                r++;
+            }
+            k++;
         }
     }
-    cout << endl;
     
     
     //finalise MPI
