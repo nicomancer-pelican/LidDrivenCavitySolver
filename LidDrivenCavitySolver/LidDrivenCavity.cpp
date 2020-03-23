@@ -69,9 +69,6 @@ void LidDrivenCavity::Initialise(){
 
 void LidDrivenCavity::Integrate(){
     PoissonSolver* poisson = new PoissonSolver();
-    poisson->SetGlobalA(Lx, Ly, Nx, Ny);
-    poisson->SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
-    poisson->SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
     //poisson->InitialisePoisson(Nx, Ny, Lx, Ly, Px, Py, startCol, endCol, startRow, endRow, v, rank);
     
     //for(double t=0.0; t<T; t+=dt){
@@ -80,7 +77,12 @@ void LidDrivenCavity::Integrate(){
         interiorV();
         guardCells();
         newInteriorV();
-        //updateS(poisson->Execute(Lx, Ly, Nx, Ny, v, s));
+        poisson->SetGlobalA(Lx, Ly, Nx, Ny);
+        poisson->SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
+        poisson->SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
+        poisson->SetX(Nx, Ny, Px, Py);
+        //poisson->Execute(Lx, Ly, Nx, Ny, Px, Py, v, s);
+        updateS(poisson->Execute(Lx, Ly, Nx, Ny,Px, Py, v, s));
     //}
 }
 
@@ -248,9 +250,9 @@ void LidDrivenCavity::newInteriorV(){
 //STEP 4 MEMBER FUNCTION
 void LidDrivenCavity::updateS(double* x){
     int k = 0;
-    for(int j=1; j<Ny-1; j++){
-        for(int i=1; i<Nx-1; i++){
-            *(s + j*Nx + i) = *(x + k);//omega[i][j];
+    for(int j=startRow; j<=endRow; j++){
+        for(int i=startCol; i<=endCol; i++){
+            *(s + j*augX + i) = *(x + k);//omega[i][j];
             k ++;
         }
     }

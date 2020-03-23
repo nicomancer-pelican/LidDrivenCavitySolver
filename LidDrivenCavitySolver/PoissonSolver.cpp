@@ -30,12 +30,12 @@ double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
         for(int i=0; i<Dim; i++){
             if(i==j){
                 *(A + j*Dim + i) = 2*((1/X2)+(1/Y2));
-                /*if((j*Dim + i + Ax) < (Dim*Dim - Ay*Dim)){
+                if((j*Dim + i + Ax) < (Dim*Dim - Ay*Dim)){
                     *(A + j*Dim + i + Ax) = -1/Y2;
                 }
                 if((j-(Ax-1))%Ax != 0){
                     *(A + j*Dim + i + 1) = -1/X2;
-                }*/
+                }
             }
         }
     }
@@ -155,6 +155,10 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         
         k++;
     } while(k<5000);
+    
+    /*for(int i=0; i<16; i++){
+        *(x + i) = *(a + 3*(Nx-2)*(Ny-2) + i);
+    }*/
 
     delete a; a = nullptr;
     delete y; y = nullptr;

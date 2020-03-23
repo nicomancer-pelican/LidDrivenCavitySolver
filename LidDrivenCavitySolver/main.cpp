@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     solver->Integrate();
     
     
-    double* v = solver->getV();
+    double* v = solver->getS();
     int dim1 = args["Nx"]/args["Px"] + 2;
     int dim2 = args["Ny"]/args["Py"] + 2;
     double* out;
@@ -168,24 +168,22 @@ int main(int argc, char **argv)
         int j = 0;
         int r = 0;
         
-        //while(k < Size){
-            while(count < Size){
-                for(int a = 1; a<dim2-1; a++){
-                    j = 0;
-                    r = count;
-                    while(j<Px){
-                        for(int i=1; i<dim1-1; i++){
-                            cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + a*dim1));
-                        }
-                        j++;
-                        r++;
+        while(count < Size){
+            for(int a = 1; a<dim2-1; a++){
+                j = 0;
+                r = count;
+                while(j<Px){
+                    for(int i=1; i<dim1-1; i++){
+                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + a*dim1));
                     }
-                    cout << endl;
-                    k++;
+                    j++;
+                    r++;
                 }
-                count += Px;
+                cout << endl;
+                k++;
             }
-        //}
+            count += Px;
+        }
     }
     
     
