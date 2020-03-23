@@ -71,7 +71,7 @@ void LidDrivenCavity::Integrate(){
     PoissonSolver* poisson = new PoissonSolver();
     //poisson->InitialisePoisson(Nx, Ny, Lx, Ly, Px, Py, startCol, endCol, startRow, endRow, v, rank);
     
-    //for(double t=0.0; t<T; t+=dt){
+    for(double t=0.0; t<T; t+=dt){
         guardCells();
         boundaryConditions();
         interiorV();
@@ -80,10 +80,10 @@ void LidDrivenCavity::Integrate(){
         poisson->SetGlobalA(Lx, Ly, Nx, Ny);
         poisson->SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
         poisson->SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
-        poisson->SetX(Nx, Ny, Px, Py);
+        //poisson->SetX(Nx, Ny, Px, Py);
         //poisson->Execute(Lx, Ly, Nx, Ny, Px, Py, v, s);
-        updateS(poisson->Execute(Lx, Ly, Nx, Ny,Px, Py, v, s));
-    //}
+        //updateS(poisson->Execute(Lx, Ly, Nx, Ny,Px, Py, v, s));
+    }
 }
 
 

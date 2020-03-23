@@ -83,12 +83,13 @@ double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, i
 double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v){
     int nx = Nx/Px;
     int ny = Ny/Py;
+    int augX = nx + 2;
     
     y = new double[(nx-2)*(ny-2)];
     int k = 0;
     for(int j=startRow; j<=endRow; j++){
         for(int i=startCol; i<=endCol; i++){
-            *(y + k) = *(v + j*Nx + i);//omega[i][j];
+            *(y + k) = *(v + j*augX + i);//omega[i][j];
             k ++;
         }
     }
@@ -129,6 +130,11 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
     
     //setup things
     cblas_dcopy(n, y, 1, r, 1); //r_0 = b (i.e. y)
+    
+    /*for(int i=0; i<16; i++){
+        *(x + i) = *(y + i);
+    }*/
+    
     cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
     cblas_dcopy(n, r, 1, p, 1); //p_0 = r_0
     //loop
