@@ -12,6 +12,8 @@ PoissonSolver::~PoissonSolver(){
 
 
 //MEMBER FUNCTIONS
+
+//create the matrix coefficient A for the global problem
 double* PoissonSolver::SetA(double Lx, double Ly, int Nx, int Ny){
     const double deltaX = Lx/(Nx-1);
     const double deltaY = Ly/(Ny-1);
