@@ -13,7 +13,7 @@ CurrentFileName        :=
 CurrentFilePath        :=
 CurrentFileFullPath    :=
 User                   :=Nicole Pellizzon
-Date                   :=15/03/20
+Date                   :=23/03/20
 CodeLitePath           :=/home/np3217/.codelite
 LinkerName             :=g++
 SharedObjectLinkerName :=g++ -shared -fPIC
@@ -60,7 +60,7 @@ AS       := as
 ## User defined environment variables
 ##
 CodeLiteDir:=/usr/share/codelite
-Objects0=$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) $(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/LidDrivenCavity.cpp$(ObjectSuffix) 
+Objects0=$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IntermediateDirectory)/LidDrivenCavity.cpp$(ObjectSuffix) $(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) 
 
 
 
@@ -91,14 +91,6 @@ PreBuild:
 ##
 ## Objects
 ##
-$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix): PoissonSolver.cpp $(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix)
-	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/np3217/LidDrivenCavitySolver/LidDrivenCavitySolver/PoissonSolver.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) $(IncludePath)
-$(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix): PoissonSolver.cpp
-	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix) -MM PoissonSolver.cpp
-
-$(IntermediateDirectory)/PoissonSolver.cpp$(PreprocessSuffix): PoissonSolver.cpp
-	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/PoissonSolver.cpp$(PreprocessSuffix) PoissonSolver.cpp
-
 $(IntermediateDirectory)/main.cpp$(ObjectSuffix): main.cpp $(IntermediateDirectory)/main.cpp$(DependSuffix)
 	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/np3217/LidDrivenCavitySolver/LidDrivenCavitySolver/main.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/main.cpp$(ObjectSuffix) $(IncludePath)
 $(IntermediateDirectory)/main.cpp$(DependSuffix): main.cpp
@@ -114,6 +106,14 @@ $(IntermediateDirectory)/LidDrivenCavity.cpp$(DependSuffix): LidDrivenCavity.cpp
 
 $(IntermediateDirectory)/LidDrivenCavity.cpp$(PreprocessSuffix): LidDrivenCavity.cpp
 	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/LidDrivenCavity.cpp$(PreprocessSuffix) LidDrivenCavity.cpp
+
+$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix): PoissonSolver.cpp $(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix)
+	$(CXX) $(IncludePCH) $(SourceSwitch) "/home/np3217/LidDrivenCavitySolver/LidDrivenCavitySolver/PoissonSolver.cpp" $(CXXFLAGS) $(ObjectSwitch)$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) $(IncludePath)
+$(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix): PoissonSolver.cpp
+	@$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) -MG -MP -MT$(IntermediateDirectory)/PoissonSolver.cpp$(ObjectSuffix) -MF$(IntermediateDirectory)/PoissonSolver.cpp$(DependSuffix) -MM PoissonSolver.cpp
+
+$(IntermediateDirectory)/PoissonSolver.cpp$(PreprocessSuffix): PoissonSolver.cpp
+	$(CXX) $(CXXFLAGS) $(IncludePCH) $(IncludePath) $(PreprocessOnlySwitch) $(OutputSwitch) $(IntermediateDirectory)/PoissonSolver.cpp$(PreprocessSuffix) PoissonSolver.cpp
 
 
 -include $(IntermediateDirectory)/*$(DependSuffix)
