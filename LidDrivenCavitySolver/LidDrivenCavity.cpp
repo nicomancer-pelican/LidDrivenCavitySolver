@@ -2,11 +2,9 @@
 #include <mpi.h>
 
 //CONSTRUCTORS//////////////////////////////////////////////////////
-//default constructor
 LidDrivenCavity::LidDrivenCavity(){
 }
 
-//default destructor
 LidDrivenCavity::~LidDrivenCavity(){
 }
 

@@ -18,7 +18,7 @@ public:
     
     
     //step 4 member function
-    double* Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, double* s, int rank);    //interior stream function at time t+dt
+    double* Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, double* s, int rank);
 
 private:
     double* A = nullptr;    //matrix of coefficients - global

@@ -1,17 +1,16 @@
 #include "PoissonSolver.h"
 #include "cblas.h"
 
-//CONSTRUCTORS
+//CONSTRUCTORS//////////////////////////////////////////////////////
 PoissonSolver::PoissonSolver(){
 }
-
 
 PoissonSolver::~PoissonSolver(){
 }
 
 
 
-//MEMBER FUNCTIONS
+//MEMBER FUNCTIONS/////////////////////////////////////////////////
 
 //create the coefficient matrix A for the global problem
 double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
@@ -28,8 +27,10 @@ double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
     A = new double[Dim*Dim];
     for(int j=0; j<Dim; j++){
         for(int i=0; i<Dim; i++){
+            //major diagonal
             if(i==j){
                 *(A + j*Dim + i) = 2*((1/X2)+(1/Y2));
+                //offset diagonals
                 if((j*Dim + i + Ax) < (Dim*Dim - Ay*Dim)){
                     *(A + j*Dim + i + Ax) = -1/Y2;
                 }
@@ -73,15 +74,18 @@ double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, i
         for(int C1 = globalStartCol; C1 <= globalEndCol; C1++){
             for(int R2 = globalStartRow; R2 <= globalEndRow; R2++){
                 for(int C2 = globalStartCol; C2 <= globalEndCol; C2++){
+                    //extract from global A
                     *(a + k) = *(A + Dim*(C1-1 + Ay*(R1-1)) + (C2-1 + Ax*(R2-1)));
                     k++;
                 }
             }
         }
     }
+    
     return a;
 }
 
+//put interior vorticity into a long vector
 double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v){
     int nx = Nx/Px;
     int ny = Ny/Py;
@@ -91,13 +95,15 @@ double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int en
     int k = 0;
     for(int j=startRow; j<=endRow; j++){
         for(int i=startCol; i<=endCol; i++){
-            *(y + k) = *(v + j*augX + i);//omega[i][j];
+            //omega[i][j];
+            *(y + k) = *(v + j*augX + i);
             k ++;
         }
     }
     return y;
 }
 
+//blank vector to solve for
 double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow){
     int nx = Nx/Px;
     int ny = Ny/Py;
@@ -107,7 +113,9 @@ double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py, int startCol, int en
 }
 
 
+//interior stream function at time t+dt
 double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, double* s, int rank){
+    //initialise bits and pieces
     SetGlobalA(Lx, Ly, Nx, Ny);
     SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
     SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
@@ -139,10 +147,6 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         cblas_dsymv(CblasRowMajor, CblasUpper, n, 1.0, a, n, p, 1, 0.0, t, 1); //t = A*p_k
         
         alpha = cblas_ddot(n, t, 1, p, 1);          //alpha = trans(p_k) * A * p_k
-        
-        /*for(int i=0; i<8; i++){
-            *(x + i) = alpha;//*(t + i);
-        }*/
         alpha = cblas_ddot(n, r, 1, r, 1) / alpha;  //alpha_k = trans(r_k) * r_k / trans(p_k) * A * p_k
         beta  = cblas_ddot(n, r, 1, r, 1);          //trans(r_k) * r_k
         
@@ -162,10 +166,6 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         
         k++;
     } while(k<5000);
-    
-    /*for(int i=0; i<16; i++){
-        *(x + i) = *(a + 3*(Nx-2)*(Ny-2) + i);
-    }*/
 
     return x;
 }
