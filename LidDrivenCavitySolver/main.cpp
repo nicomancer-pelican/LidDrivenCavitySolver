@@ -24,8 +24,7 @@ void printMatrix(double* s, int Nx, int Ny){
     cout << endl;
 }
 
-//GET ARGUMENTS
-//instructions to user
+//instructions to user - accessed by -h on command line
 void usage(){
     cout << "required parameters: \n"
             "--Lx <number> length of the domain in the x direction.\n"
@@ -39,7 +38,8 @@ void usage(){
             "--Re <number> reynolds number.\n";
     exit(1);
 }
-//function to get arguments
+
+//get arguments
 std::map<string, double> getArgs(int argc, char **argv){
     std::map<string, double> args;
     
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
     // Run the solver
     solver->Integrate();
     
-    //get results
+    //prep to get results
     double* v = solver->getV();
     double* s = solver->getS();
     int dim1 = args["Nx"]/args["Px"] + 2;
@@ -190,28 +190,34 @@ int main(int argc, char **argv)
     double* outV;
     double* outS;
     
+    //only allocate memory on root rank - unecessary to do so on the others
     if(Rank == 0){
         outV = new double[dim1*dim2*Size];
         outS = new double[dim1*dim2*Size];
     }
     
+    //gather to root rank
     MPI_Gather(v, dim1*dim2, MPI_DOUBLE, outV, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     MPI_Gather(s, dim1*dim2, MPI_DOUBLE, outS, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
     if(Rank == 0){
+        //create a file for vorticity data
         ofstream vOut("vorticity.txt", ios::out);
         vOut.precision(4);
         vOut << endl << "FINAL VORTICITY - in row major format (rows divided by a blank line)" << endl << endl;
         
+        //create a file for streamfunction data
         ofstream sOut("streamfunction.txt", ios::out);
         sOut.precision(4);
         sOut << endl << endl << "FINAL STREAMFUNCTION - in row major format (rows divided by a blank line)" << endl << endl;
         
+        //set counters
         int k = 0;
         int count = 0;
         int j = 0;
         int r = 0;
         
+        //reconstruct global matrices
         while(count < Size){
             for(int a = 1; a<dim2-1; a++){
                 j = 0;
@@ -224,6 +230,7 @@ int main(int argc, char **argv)
                     j++;
                     r++;
                 }
+                //space between each row of data
                 vOut << endl << endl;
                 sOut << endl << endl;
                 k++;
