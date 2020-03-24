@@ -134,7 +134,7 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
     cblas_dcopy(n, y, 1, r, 1); //r_0 = b (i.e. y)
     
     for(int i=0; i<8; i++){
-        *(x + i) = *(a + 1*8*8 + i);
+        *(x + i) = *(y + i);
     }
     
     /*cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
