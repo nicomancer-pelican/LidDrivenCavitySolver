@@ -14,7 +14,7 @@ public:
     double* SetGlobalA(double Lx, double Ly, int Nx, int Ny);
     double* SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, int rank);
     double* SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v);
-    double* SetX(int Nx, int Ny, int Px, int Py);
+    double* SetX(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow);
     
     void InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, int rank);
     

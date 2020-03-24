@@ -71,7 +71,7 @@ private:
 
 //for std::cout
 inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
-    return os << a.getV();
+    return os << a.getS();
 }
 
 #endif //LIDDRIVENCAVITY_SOLVER_H

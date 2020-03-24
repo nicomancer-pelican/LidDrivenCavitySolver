@@ -45,21 +45,24 @@ double* PoissonSolver::SetGlobalA(double Lx, double Ly, int Nx, int Ny){
 
 //create the coefficient matrix a for the local problem
 double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, int rank){
+    int nx = Nx/Px;
+    int ny = Ny/Py;
+    
     int Ax = Nx - 2;
     int Ay = Ny - 2;
     int Dim = Ax*Ay;
     
     //relate local start and end points to the global
     int rankCol = rank%Px;
-    int globalStartCol = (startCol - 1) + 2*rankCol;
+    int globalStartCol = (startCol - 1) + nx*rankCol;
     int globalEndCol   = globalStartCol + endCol - startCol;
     
-    int rankRow = rank/Py;
-    int globalStartRow = (startRow - 1) + 2*rankRow;
+    int rankRow = rank%Py;
+    int globalStartRow = (startRow - 1) + ny*rankRow;
     int globalEndRow   = globalStartRow + endRow - startRow;
     
-    int ax = globalEndCol - globalStartCol + 1;
-    int ay = globalEndRow - globalStartRow + 1;
+    int ax = endCol - startCol + 1;
+    int ay = endRow - startRow + 1;
     int dim = ax*ay;
     
     //create matrix a (symmetric upper triangle) - coefficient matrix for the 'local' case
@@ -76,7 +79,6 @@ double* PoissonSolver::SetLocalA(int Nx, int Ny, int Px, int Py, int startCol, i
             }
         }
     }
-    
     return a;
 }
 
@@ -85,7 +87,7 @@ double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int en
     int ny = Ny/Py;
     int augX = nx + 2;
     
-    y = new double[(nx-2)*(ny-2)];
+    y = new double[(endCol - startCol + 1)*(endRow - startRow + 1)];
     int k = 0;
     for(int j=startRow; j<=endRow; j++){
         for(int i=startCol; i<=endCol; i++){
@@ -96,11 +98,11 @@ double* PoissonSolver::SetY(int Nx, int Ny, int Px, int Py, int startCol, int en
     return y;
 }
 
-double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py){
+double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow){
     int nx = Nx/Px;
     int ny = Ny/Py;
     
-    x = new double[(nx-2)*(ny-2)];
+    x = new double[(endCol - startCol + 1)*(endRow - startRow + 1)];
     return x;
 }
 
@@ -108,7 +110,7 @@ void PoissonSolver::InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, in
     SetGlobalA(Lx, Ly, Nx, Ny);
     SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
     SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
-    SetX(Nx, Ny, Px, Py);
+    SetX(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow);
 }
 
 double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, double* v, double* s){
@@ -131,11 +133,11 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
     //setup things
     cblas_dcopy(n, y, 1, r, 1); //r_0 = b (i.e. y)
     
-    /*for(int i=0; i<16; i++){
-        *(x + i) = *(y + i);
-    }*/
+    for(int i=0; i<8; i++){
+        *(x + i) = *(a + 1*8*8 + i);
+    }
     
-    cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
+    /*cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
     cblas_dcopy(n, r, 1, p, 1); //p_0 = r_0
     //loop
     do{
@@ -148,7 +150,7 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         cblas_daxpy(n,  alpha, p, 1, x, 1);         //x_k+1 = x_k + alpha_k * p_k
         cblas_daxpy(n, -alpha, t, 1, r, 1);         //r_k+1 = r_k - alpha_k * A * p_k
         
-        eps = cblas_dnrm2(n, r, 1);     //euclidean norm
+        eps = cblas_dnrm2(n, r, 1);                 //euclidean norm
         if(eps < tol*tol){
             break;
         }
@@ -160,13 +162,11 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         cblas_dcopy(n, t, 1, p, 1);                 //copy temp, t into p
         
         k++;
-    } while(k<5000);
+    } while(k<5000);*/
     
     /*for(int i=0; i<16; i++){
         *(x + i) = *(a + 3*(Nx-2)*(Ny-2) + i);
     }*/
 
-    delete a; a = nullptr;
-    delete y; y = nullptr;
     return x;
 }

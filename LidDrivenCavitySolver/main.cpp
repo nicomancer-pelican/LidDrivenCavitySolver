@@ -148,7 +148,7 @@ int main(int argc, char **argv)
     solver->Integrate();
     
     
-    double* v = solver->getV();
+    double* v = solver->getS();
     int dim1 = args["Nx"]/args["Px"] + 2;
     int dim2 = args["Ny"]/args["Py"] + 2;
     double* out;
