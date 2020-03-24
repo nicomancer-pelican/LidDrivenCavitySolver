@@ -5,7 +5,7 @@
 #include <getopt.h>
 #include <map>
 #include <mpi.h>
-#include <assert.h>
+#include <fstream>
 using namespace std;
 
 #include "LidDrivenCavity.h"
@@ -187,67 +187,51 @@ int main(int argc, char **argv)
     double* s = solver->getS();
     int dim1 = args["Nx"]/args["Px"] + 2;
     int dim2 = args["Ny"]/args["Py"] + 2;
-    double* out;
-    double* out2;
-    double* disp;
+    double* outV;
+    double* outS;
     
     if(Rank == 0){
-        out = new double[dim1*dim2*Size];
-        out2 = new double[dim1*dim2*Size];
+        outV = new double[dim1*dim2*Size];
+        outS = new double[dim1*dim2*Size];
     }
     
-    MPI_Gather(v, dim1*dim2, MPI_DOUBLE, out, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    MPI_Gather(s, dim1*dim2, MPI_DOUBLE, out2, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(v, dim1*dim2, MPI_DOUBLE, outV, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(s, dim1*dim2, MPI_DOUBLE, outS, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
     if(Rank == 0){
+        ofstream vOut("vorticity.txt", ios::out);
+        vOut.precision(4);
+        vOut << endl << "FINAL VORTICITY - in row major format (rows divided by a blank line)" << endl << endl;
+        
+        ofstream sOut("streamfunction.txt", ios::out);
+        sOut.precision(4);
+        sOut << endl << endl << "FINAL STREAMFUNCTION - in row major format (rows divided by a blank line)" << endl << endl;
+        
         int k = 0;
         int count = 0;
         int j = 0;
         int r = 0;
         
-        cout << endl << "final voriticty:" << endl;
         while(count < Size){
             for(int a = 1; a<dim2-1; a++){
                 j = 0;
                 r = count;
                 while(j<Px){
                     for(int i=1; i<dim1-1; i++){
-                        cout << setw(12) << setprecision(4) << *(out + dim1*dim2*r + (i + a*dim1));
+                        vOut << setw(12) << *(outV + dim1*dim2*r + (i + a*dim1));
+                        sOut << setw(12) << *(outS + dim1*dim2*r + (i + a*dim1));
                     }
                     j++;
                     r++;
                 }
-                cout << endl;
+                vOut << endl << endl;
+                sOut << endl << endl;
                 k++;
             }
             count += Px;
         }
-        
-        k = 0;
-        count = 0;
-        j = 0;
-        r = 0;
-        
-        cout << endl << endl << "final streamfunction:" << endl;
-        
-        while(count < Size){
-            for(int a = 1; a<dim2-1; a++){
-                j = 0;
-                r = count;
-                while(j<Px){
-                    for(int i=1; i<dim1-1; i++){
-                        cout << setw(12) << setprecision(4) << *(out2 + dim1*dim2*r + (i + a*dim1));
-                    }
-                    j++;
-                    r++;
-                }
-                cout << endl;
-                k++;
-            }
-            count += Px;
-        }
-        
-        cout << endl;
+        vOut.close();
+        sOut.close();
     }
     
     
