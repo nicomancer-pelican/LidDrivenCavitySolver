@@ -11,6 +11,33 @@ using namespace std;
 #include "LidDrivenCavity.h"
 #include "PoissonSolver.h"
 
+
+/* np3217 01333401
+ * AERO96021 High Performance Computing 2020 Coursework
+ * 
+ * LID-DRIVEN CAVITY PROBLEM
+ * 
+ * Objectives: write a parallel numerical code for solving the voriticity-stream
+ * funtion formulation of the incompressible Navier-Stokes equations in 2D using
+ * the finite difference method.
+ * 
+ * Step 1: vorticity at time t is updated on the boundaries
+ * Step 2: vorticity at time t is updated on the interior
+ * Step 3: vorticity at time t+dt is computed on the interior
+ * Step 4: stream function at time t+dt is computed (solve Poisson equation)
+ * 
+ * The algorithm was split such that step 4 is taken care of in the PoissonSolver
+ * class. This is used in the LidDrivenCavity class to run the algorithm through
+ * all four steps and loop through them.
+ * 
+ * main.cpp is run to gather the user inputs which are fed into the LidDrivenCavity
+ * class and then into the PoissonClass to perform the iterative calculations. The
+ * data for the final timestep, T, is then returned to main.cpp where it is then
+ * reconstructed and written to their respective files.
+*/
+
+//FUNCTIONS
+
 //print functions for testing
 void printMatrix(double* s, int Nx, int Ny){
     int k = 0;
@@ -107,6 +134,8 @@ std::map<string, double> getArgs(int argc, char **argv){
 }
 
 
+
+//MAIN
 int main(int argc, char **argv)
 {
     //gather inputs

@@ -3,6 +3,12 @@
 
 using namespace std;
 
+/* Poisson Solver class used to solve a set of linear equations in the form y = Ax
+ * y = vector of known interior vorticities at time t+dt
+ * x = vector of unknown interior streamfunctions at time t+dt
+ * A = symmetric banded matrix of constant coefficients
+*/
+
 class PoissonSolver
 {
 public:
@@ -28,8 +34,3 @@ private:
 };
 
 #endif //POISSON_SOLVER_H
-
-/* Poisson Solver class used to solve a set of linear equations in the form y = Ax
- * y = vector of known interior vorticities at time t+dt
- * x = vector of unknown interior streamfunctions at time t+dt
- * A = symmetric banded matrix of constant coefficients*/
