@@ -106,18 +106,17 @@ double* PoissonSolver::SetX(int Nx, int Ny, int Px, int Py, int startCol, int en
     return x;
 }
 
-void PoissonSolver::InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, int rank){
+
+double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, double* s, int rank){
     SetGlobalA(Lx, Ly, Nx, Ny);
     SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
     SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
     SetX(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow);
-}
-
-double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, double* v, double* s){
+    
     int nx = Nx/Px;
     int ny = Ny/Py;
     
-    int n = (nx-2)*(ny-2);
+    int n = (endCol - startCol + 1)*(endRow - startRow + 1);
     double R[n] = {0.0};
     double* r = &R[0];
     double P[n] = {0.0};
@@ -132,18 +131,18 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
     
     //setup things
     cblas_dcopy(n, y, 1, r, 1); //r_0 = b (i.e. y)
-    
-    for(int i=0; i<8; i++){
-        *(x + i) = *(y + i);
-    }
-    
-    /*cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
+    cblas_dsymv(CblasRowMajor, CblasUpper, n, -1.0, a, n, x, 1, 1.0, r, 1); //r_0 = y - Ax_0
     cblas_dcopy(n, r, 1, p, 1); //p_0 = r_0
+
     //loop
     do{
         cblas_dsymv(CblasRowMajor, CblasUpper, n, 1.0, a, n, p, 1, 0.0, t, 1); //t = A*p_k
-       
+        
         alpha = cblas_ddot(n, t, 1, p, 1);          //alpha = trans(p_k) * A * p_k
+        
+        /*for(int i=0; i<8; i++){
+            *(x + i) = alpha;//*(t + i);
+        }*/
         alpha = cblas_ddot(n, r, 1, r, 1) / alpha;  //alpha_k = trans(r_k) * r_k / trans(p_k) * A * p_k
         beta  = cblas_ddot(n, r, 1, r, 1);          //trans(r_k) * r_k
         
@@ -162,7 +161,7 @@ double* PoissonSolver::Execute(double Lx, double Ly, int Nx, int Ny, int Px, int
         cblas_dcopy(n, t, 1, p, 1);                 //copy temp, t into p
         
         k++;
-    } while(k<5000);*/
+    } while(k<5000);
     
     /*for(int i=0; i<16; i++){
         *(x + i) = *(a + 3*(Nx-2)*(Ny-2) + i);

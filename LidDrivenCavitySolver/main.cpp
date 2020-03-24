@@ -5,6 +5,7 @@
 #include <getopt.h>
 #include <map>
 #include <mpi.h>
+#include <assert.h>
 using namespace std;
 
 #include "LidDrivenCavity.h"
@@ -31,11 +32,11 @@ void usage(){
             "--Ly <number> length of the domain in the y direction.\n"
             "--Nx <number> number of grid points in the x direction.\n"
             "--Ny <number> number of grid points in the y direction.\n"
-            "--Px <number> number of partitions in the x direction (parallel)"
-            "--Py <number> number of partitions in the y direction (parallel)"
+            "--Px <number> number of partitions in the x direction (parallel).\n"
+            "--Py <number> number of partitions in the y direction (parallel).\n"
             "--dt <number> time step size.\n"
             "--T  <number> final time.\n"
-            "--Re <number> reynolds number.";
+            "--Re <number> reynolds number.\n";
     exit(1);
 }
 //function to get arguments
@@ -110,14 +111,47 @@ int main(int argc, char **argv)
 {
     //gather inputs
     std::map<string, double> args = getArgs(argc, argv);
-    //test user inputs for validity - look into using assert
-    //Nx/Px, Ny/Py > 2 as there must be at least one internal point
-    //check Courant–Friedrichs–Lewy condition is satisfied (Cmax = 1 as this is explicit)
+    
+    double Lx = args["Lx"];
+    double Ly = args["Ly"];
+    int Nx = args["Nx"];
+    int Ny = args["Ny"];
+    int Px = args["Px"];
+    int Py = args["Py"];
+    double dt = args["dt"];
+    double T  = args["T "];
+    double Re = args["Re"];
+    
+    //check inputs
+    if(Nx%Px != 0 || Ny%Py != 0){
+        cout << "number of processor divisions must be a factor of the number of elements" << endl;
+        return 1;
+    }
+    if(Nx <= 2 || Ny <= 2){
+        cout << "domain must have a size of 3x3 or greater" << endl;
+        return 1;
+    }
+    if(Lx <= 0 || Ly <= 0){
+        cout << "dimensions must be greater than 0" << endl;
+        return 1;
+    }
+    /*if(T <= 0){
+        cout << "final time must be greater than 0" << endl;
+        return 1;
+    }*/
+    if(Re <=0){
+        cout << "Reynolds number must be greater than 0" << endl;
+        return 1;
+    }
+    if(dt*(Nx-1)/(Lx) > 1){
+        cout << "Courant-Friedrichs-Lewy condition not satisfied - decrease the timestep" << endl;
+        return 1;
+    }
     
     // Create a new instance of the LidDrivenCavity class
     LidDrivenCavity* solver = new LidDrivenCavity();
 
-    // Configure the solver here...
+    // Configure the solver
     solver->SetDomainSize(args["Lx"], args["Ly"]);
     solver->SetGridSize(args["Nx"], args["Ny"]);
     solver->SetTimeStep(args["dt"]);
@@ -125,6 +159,7 @@ int main(int argc, char **argv)
     solver->SetReynoldsNumber(args["Re"]);
     solver->SetPartitions(args["Px"], args["Py"]);
     
+    //initialise solver
     solver->Initialise();
     
     
@@ -134,7 +169,7 @@ int main(int argc, char **argv)
         cout << "an error occured initialising MPI" << endl;
     }
     
-    //find rank
+    //find rank and size
     int Rank, Size, retval_Rank, retval_Size;
     retval_Rank = MPI_Comm_rank(MPI_COMM_WORLD, &Rank);
     retval_Size = MPI_Comm_size(MPI_COMM_WORLD, &Size);
@@ -147,20 +182,22 @@ int main(int argc, char **argv)
     // Run the solver
     solver->Integrate();
     
-    
-    double* v = solver->getS();
+    //get results
+    double* v = solver->getV();
+    double* s = solver->getS();
     int dim1 = args["Nx"]/args["Px"] + 2;
     int dim2 = args["Ny"]/args["Py"] + 2;
     double* out;
+    double* out2;
     double* disp;
-    int Px = args["Px"];
-    int Py = args["Py"];
     
     if(Rank == 0){
         out = new double[dim1*dim2*Size];
+        out2 = new double[dim1*dim2*Size];
     }
     
     MPI_Gather(v, dim1*dim2, MPI_DOUBLE, out, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+    MPI_Gather(s, dim1*dim2, MPI_DOUBLE, out2, dim1*dim2, MPI_DOUBLE, 0, MPI_COMM_WORLD);
     
     if(Rank == 0){
         int k = 0;
@@ -168,6 +205,7 @@ int main(int argc, char **argv)
         int j = 0;
         int r = 0;
         
+        cout << endl << "final voriticty:" << endl;
         while(count < Size){
             for(int a = 1; a<dim2-1; a++){
                 j = 0;
@@ -184,6 +222,32 @@ int main(int argc, char **argv)
             }
             count += Px;
         }
+        
+        k = 0;
+        count = 0;
+        j = 0;
+        r = 0;
+        
+        cout << endl << endl << "final streamfunction:" << endl;
+        
+        while(count < Size){
+            for(int a = 1; a<dim2-1; a++){
+                j = 0;
+                r = count;
+                while(j<Px){
+                    for(int i=1; i<dim1-1; i++){
+                        cout << setw(12) << setprecision(4) << *(out2 + dim1*dim2*r + (i + a*dim1));
+                    }
+                    j++;
+                    r++;
+                }
+                cout << endl;
+                k++;
+            }
+            count += Px;
+        }
+        
+        cout << endl;
     }
     
     

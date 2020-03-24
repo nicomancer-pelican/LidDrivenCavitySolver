@@ -14,16 +14,18 @@ public:
     LidDrivenCavity();
     ~LidDrivenCavity();
 
+    
     //MEMBER FUNCTIONS
+    //setters
     void SetDomainSize(double xlen, double ylen);
     void SetGridSize(int nx, int ny);
     void SetTimeStep(double deltat);
     void SetFinalTime(double finalt);
     void SetReynoldsNumber(double Re);
     void SetPartitions(int px, int py);
-    
     void SetRank(int Rank);
-
+    
+    //functions that do the heavy lifting
     void Initialise();
     void Integrate();
 
@@ -36,9 +38,9 @@ public:
     //Step 3
     void newInteriorV();       //interior vorticity at time t+dt
     //Step 4
-    void updateS(double* x); //interior stream function at time t+dt
+    void updateS(double* x);   //interior stream function at time t+dt
     
-    //getter functions for testing
+    //getter functions
     double* getV() const;
     double* getS() const;
 
@@ -46,6 +48,7 @@ private:
     double* v = nullptr;    //vorticity matrix pointer
     double* s = nullptr;    //streamfunction matrix pointer
 
+    //user inputs
     double dt;
     double T;
     int    Nx;
@@ -61,6 +64,7 @@ private:
     int augX;   //augmented size (nx+2)
     int augY;   //augmented size (ny+2)
     
+    //marking the interior sections that Steps 2-4 need to be applied to
     int startRow;
     int startCol;
     int endRow;
@@ -71,7 +75,7 @@ private:
 
 //for std::cout
 inline std::ostream& operator<<(std::ostream& os, const LidDrivenCavity& a){
-    return os << a.getS();
+    return os << a.getV() << endl << endl << a.getS();
 }
 
 #endif //LIDDRIVENCAVITY_SOLVER_H

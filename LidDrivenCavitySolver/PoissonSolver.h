@@ -16,10 +16,9 @@ public:
     double* SetY(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v);
     double* SetX(int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow);
     
-    void InitialisePoisson(int Nx, int Ny, int Lx, int Ly, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, int rank);
     
     //step 4 member function
-    double* Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, double* v, double* s);    //interior stream function at time t+dt
+    double* Execute(double Lx, double Ly, int Nx, int Ny, int Px, int Py, int startCol, int endCol, int startRow, int endRow, double* v, double* s, int rank);    //interior stream function at time t+dt
 
 private:
     double* A = nullptr;    //matrix of coefficients - global

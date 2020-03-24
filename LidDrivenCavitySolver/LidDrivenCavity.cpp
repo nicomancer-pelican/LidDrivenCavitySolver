@@ -45,8 +45,7 @@ void LidDrivenCavity::SetRank(int Rank){
 }
 
 
-
-//other member functions
+//initialise other variables
 void LidDrivenCavity::Initialise(){
     //set size local to each processor
     nx = Nx/Px;
@@ -67,30 +66,26 @@ void LidDrivenCavity::Initialise(){
     endCol = nx;
 }
 
+//integrate runs the functions necessary to solve the LDC problem
 void LidDrivenCavity::Integrate(){
     PoissonSolver* poisson = new PoissonSolver();
-    //poisson->InitialisePoisson(Nx, Ny, Lx, Ly, Px, Py, startCol, endCol, startRow, endRow, v, rank);
     
-    //for(double t=0.0; t<T; t+=dt){
+    for(double t=0.0; t<T; t+=dt){
         guardCells();
         boundaryConditions();
         interiorV();
         guardCells();
         newInteriorV();
-        poisson->SetGlobalA(Lx, Ly, Nx, Ny);
-        poisson->SetLocalA(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, rank);
-        poisson->SetY(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow, v);
-        poisson->SetX(Nx, Ny, Px, Py, startCol, endCol, startRow, endRow);
-        //poisson->Execute(Lx, Ly, Nx, Ny, Px, Py, v, s);
-        updateS(poisson->Execute(Lx, Ly, Nx, Ny,Px, Py, v, s));
-    //}
+        updateS(poisson->Execute(Lx, Ly, Nx, Ny,Px, Py, startCol, endCol, startRow, endRow, v, s, rank));
+    }
     
     delete poisson; poisson = nullptr;
 }
 
 
-//GUARD CELLS
+//GUARD CELLS - update the guard cells
 void LidDrivenCavity::guardCells(){
+    
     //setup Cartesian topology - 2x2 grid, 1 processor for each grid
     MPI_Comm cartesianGrid;
     const int ndims = 2;           //number of dimentions of cartesian array
@@ -168,13 +163,12 @@ void LidDrivenCavity::guardCells(){
         }
     }
     
-    
     delete BuffCol; BuffCol = nullptr;
     delete BuffRow; BuffRow = nullptr;
 }
 
 
-//STEP 1 MEMBER FUNCTIONS
+//STEP 1 MEMBER FUNCTIONS - exterior vorticity at time t
 void LidDrivenCavity::boundaryConditions(){
     const double deltaX = Lx / (Nx-1);
     const double deltaY = Ly / (Ny-1);
@@ -210,12 +204,13 @@ void LidDrivenCavity::boundaryConditions(){
     }
 }
 
-//STEP 2 MEMBER FUNCTION
+//STEP 2 MEMBER FUNCTION - interior vortcity at time t
 void LidDrivenCavity::interiorV(){
     const double deltaX = Lx / (Nx-1);
     const double deltaY = Ly / (Ny-1);
     const double X2     = deltaX * deltaX;
     const double Y2     = deltaY * deltaY;
+    
     for(int j=startRow; j<=endRow; j++){
         for(int i=startCol; i<endCol; i++){
             *(v + j*augX + i) = -((*(s + j*augX + i + 1) - *(s + j*augX + i)*2 + *(s + j*augX + i - 1)) / X2)
@@ -224,32 +219,24 @@ void LidDrivenCavity::interiorV(){
     }
 }
 
-//Setp 3 MEMBER FUNCTION
+//Setp 3 MEMBER FUNCTION - update interior vorticity at time t+dt
 void LidDrivenCavity::newInteriorV(){
     const double deltaX = Lx / (Nx-1);
     const double deltaY = Ly / (Ny-1);
     const double X2     = deltaX * deltaX;
     const double Y2     = deltaY * deltaY;
+    
     for(int j=startRow; j<=endRow; j++){
         for(int i=startCol; i<=endCol; i++){
             double a = ((*(v + j*augX + i + 1) - *(v + j*augX + i)*2 + *(v + j*augX + i -1))/X2) + ((*(v + (j+1)*augX + i) - *(v + j*augX + i)*2 + *(v + (j-1)*augX + i))/Y2);
             double b = ((*(v + (j+1)*augX + i) - *(v + (j-1)*augX + i)) / (2*deltaY)) * ((*(v + j*augX + i + 1) - *(v + j*augX + i - 1)) / (2*deltaX));
             double c = ((*(v + j*augX + i + 1) - *(v + j*augX + i - 1)) / (2*deltaX)) * ((*(v + (j+1)*augX + i) - *(v + (j-1)*augY + i)) / (2*deltaY));
             *(v + j*augX + i) = ((1/Re)*a - b + c)*dt + *(v + j*augX + i);
-            
-            /**(v + j*augX + i) = *(v + j*augX + i) + dt*(
-                               (1/Re) * (((*(v + j*augX + i + 1) - *(v + j*augX + i)*2 + *(v + j*augX + i - 1)) / X2)
-                                        +((*(v + augX*(j+1) + i) - *(v + j*augX + i)*2 + *(v + augX*(j-1) + i)) / Y2))
-                              -(((*(s + augX*(j+1) + i) - *(s + augX*(j-1) + i)) / (2*deltaY))
-                               *((*(v + j*augX + i + 1) - *(v + j*augX + i - 1)) / (2 *deltaX)))
-                              +(((*(s + j*augX + i + 1) - *(s + j*augX + i - 1)) / (2*deltaX))
-                               *((*(v + augX*(j+1) + i) - *(v + augX*(j-1) + i)) / (2*deltaY)))
-                                );*/
         }
     }
 }
 
-//STEP 4 MEMBER FUNCTION
+//STEP 4 MEMBER FUNCTION - update streamfunction at time t+dt
 void LidDrivenCavity::updateS(double* x){
     int k = 0;
     for(int j=startRow; j<=endRow; j++){
@@ -261,8 +248,7 @@ void LidDrivenCavity::updateS(double* x){
 }
 
 
-
-//getter functions for testing
+//getter functions
 double* LidDrivenCavity::getV() const{
     return v;
 }
