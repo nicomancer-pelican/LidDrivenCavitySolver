@@ -156,6 +156,9 @@ int main(int argc, char **argv)
         cout << "number of processor divisions must be a factor of the number of elements" << endl;
         return 1;
     }
+    if(Px/Py > 2 || Px/Py < 0){
+        cout << "WARNING: sub-domain length to width ratio is high, performance will not be optimal" << endl;
+    }
     if(Nx <= 2 || Ny <= 2){
         cout << "domain must have a size of 3x3 or greater" << endl;
         return 1;
